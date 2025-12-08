@@ -20,6 +20,9 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
   - TFT_CS → GPIO 5
   - TFT_DC → GPIO 2
   - TFT_RST → GPIO 4
+  - TFT_SCK → GPIO 18
+  - TFT_SDI → GPIO 23
+  - TFT_BLK → 3.3V or any pin that has been set **high**
 
 ## Setup
 
