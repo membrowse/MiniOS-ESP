@@ -27,13 +27,17 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 ## Setup
 
 1. **Clone the repository**  
-   `git clone https://github.com/VuqarAhadli/MiniOS-ESP.git`  
-   `cd MiniOS-ESP`
+   ```bash
+   git clone https://github.com/VuqarAhadli/MiniOS-ESP.git
+   cd MiniOS-ESP
+   ```
 
 2. **Configure WiFi credentials**  
    Edit `src/config.h` and update your WiFi SSID and password:
-   `const char* WIFI_SSID = "your_wifi_ssid";`  
-   `const char* WIFI_PASS = "your_wifi_password";`
+   ```cpp
+   const char* WIFI_SSID = "your_wifi_ssid";
+   const char* WIFI_PASS = "your_wifi_password";
+   ```
 
 3. **Upload to ESP32**  
    - Using PlatformIO: `pio run --target upload`  
@@ -45,21 +49,21 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 
 ## Available Commands
 
-| Command             | Description               | Example                     |
-|--------------------|---------------------------|-----------------------------|
-| `help`             | Show all commands         | `help`                      |
-| `os`               | Display MiniOS logo       | `os`                        |
-| `version`          | Show version info         | `version`                   |
-| `wifi`             | Connect to WiFi           | `wifi`                      |
-| `time`             | Show current time         | `time`                      |
-| `synctime`         | Sync time with NTP server | `synctime`                  |
-| `write <file> <text>` | Write text to a file   | `write notes.txt Hello`     |
-| `read <file>`      | Read file contents        | `read notes.txt`            |
-| `delete <file>`    | Delete a file             | `delete notes.txt`          |
-| `curl <url>`       | Fetch URL content         | `curl https://example.com`  |
-| `calc <expression>` | Calculate expression     | `calc 15 + 27 * 2`          |
-| `themes`           | List available themes     | `themes`                    |
-| `theme <name|number>` | Set display theme       | `theme matrix` or `theme 0` |
+| Command | Description | Example |
+|---------|-------------|---------|
+| `help` | Show all commands | `help` |
+| `os` | Display MiniOS logo | `os` |
+| `version` | Show version info | `version` |
+| `wifi` | Connect to WiFi | `wifi` |
+| `time` | Show current time | `time` |
+| `synctime` | Sync time with NTP server | `synctime` |
+| `write <file> <text>` | Write text to a file | `write notes.txt Hello` |
+| `read <file>` | Read file contents | `read notes.txt` |
+| `delete <file>` | Delete a file | `delete notes.txt` |
+| `curl <url>` | Fetch URL content | `curl https://example.com` |
+| `calc <expression>` | Calculate expression | `calc 15 + 27 * 2` |
+| `themes` | List available themes | `themes` |
+| `theme <name\|number>` | Set display theme | `theme matrix` or `theme 0` |
 
 ## Themes
 
@@ -74,31 +78,33 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 
 ## Project Structure
 
+```
 MiniOS-ESP/
-├── src/ # Source files
-│ ├── main.cpp # Main program loop
-│ ├── commands.cpp # Command implementations
-│ ├── display.cpp # TFT display functions
-│ ├── filesystem.cpp # SPIFFS file operations
-│ ├── network.cpp # WiFi and HTTP functionality
-│ └── theme.cpp # Theme management
-├── include/ # Header files
-│ ├── commands.h
-│ ├── config.h # WiFi credentials and general config
-│ ├── display.h
-│ ├── filesystem.h
-│ ├── network.h
-│ └── theme.h
-├── platformio.ini # Build/upload configuration
-├── README.md # Project documentation
-└── .gitignore # Ignored files
+├── src/                 # Source files
+│   ├── main.cpp         # Main program loop
+│   ├── commands.cpp     # Command implementations
+│   ├── display.cpp      # TFT display functions
+│   ├── filesystem.cpp   # SPIFFS file operations
+│   ├── network.cpp      # WiFi and HTTP functionality
+│   └── theme.cpp        # Theme management
+├── include/             # Header files
+│   ├── commands.h
+│   ├── config.h         # WiFi credentials and general config
+│   ├── display.h
+│   ├── filesystem.h
+│   ├── network.h
+│   └── theme.h
+├── platformio.ini       # Build/upload configuration
+├── README.md            # Project documentation
+└── .gitignore           # Ignored files
+```
 
 ## Dependencies
 
 This project uses the following open-source libraries:  
 
-- Adafruit GFX Library (https://github.com/adafruit/Adafruit-GFX-Library)  
-- Adafruit ST7789 Library (https://github.com/adafruit/Adafruit-ST7789-Library)  
+- [Adafruit GFX Library](https://github.com/adafruit/Adafruit-GFX-Library)  
+- [Adafruit ST7789 Library](https://github.com/adafruit/Adafruit-ST7789-Library)  
 - ESP32 Arduino Core (built into PlatformIO and Arduino IDE for ESP32)  
 
 Install these via PlatformIO Library Manager or Arduino Library Manager.
@@ -113,8 +119,8 @@ MIT License
 
 ## Author
 
-VuqarAhadli  
-GitHub Repository: https://github.com/VuqarAhadli/MiniOS-ESP  
+**VuqarAhadli**  
+GitHub Repository: [https://github.com/VuqarAhadli/MiniOS-ESP](https://github.com/VuqarAhadli/MiniOS-ESP)
 
 ## Version
 
