@@ -99,7 +99,7 @@ MiniOS-ESP/
 │   ├── pug.h
 │   └── theme.h
 ├── lib/
-│   └── [Adafruit ST7789 Library](https://github.com/adafruit/Adafruit-ST7789-Library
+│   └── Adafruit ST7789 Library
 ├── platformio.ini       # Build/upload configuration
 ├── README.md            # Project documentation
 └── .gitignore           # Ignored files
