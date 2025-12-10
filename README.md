@@ -86,14 +86,19 @@ MiniOS-ESP/
 │   ├── display.cpp      # TFT display functions
 │   ├── filesystem.cpp   # SPIFFS file operations
 │   ├── network.cpp      # WiFi and HTTP functionality
+│   ├── pug.cpp
+│   ├── config.cpp       # WiFi credentials and general config
 │   └── theme.cpp        # Theme management
 ├── include/             # Header files
 │   ├── commands.h
-│   ├── config.h         # WiFi credentials and general config
+│   ├── config.h         
 │   ├── display.h
 │   ├── filesystem.h
 │   ├── network.h
+│   ├── pug.h
 │   └── theme.h
+├── lib/
+│   └── [Adafruit ST7789 Library](https://github.com/adafruit/Adafruit-ST7789-Library
 ├── platformio.ini       # Build/upload configuration
 ├── README.md            # Project documentation
 └── .gitignore           # Ignored files
@@ -124,4 +129,4 @@ GitHub Repository: [https://github.com/VuqarAhadli/MiniOS-ESP](https://github.co
 
 ## Version
 
-MiniOS-ESP v1.0
+MiniOS-ESP v1.0.1
