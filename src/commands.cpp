@@ -4,6 +4,7 @@
 #include "network.h"
 #include "theme.h"
 #include "config.h"
+#include "pug.h"
 
 void showVersion() {
     printLine(OS_VERSION);
@@ -11,20 +12,30 @@ void showVersion() {
 }
 
 void showHelp() {
-    printLine("Commands:");
-    printLine(" write <file> <text>");
-    printLine(" read <file>");
-    printLine(" delete <file>");
-    printLine(" version");
-    printLine(" time");
-    printLine(" synctime");
-    printLine(" wifi");
-    printLine(" curl <url>");
-    printLine(" calc <expression>");
-    printLine(" themes");
-    printLine(" theme <name|number>");
-    printLine(" os");
+    const char* commands[] = {
+        "write <file> <text>   - Write text to a file",
+        "read <file>           - Read a file",
+        "delete <file>         - Delete a file",
+        "version               - Show version",
+        "time                  - Show current time",
+        "synctime              - Sync time with server",
+        "wifi                  - Show WiFi info",
+        "curl <url>            - Fetch URL",
+        "calc <expression>     - Evaluate expression",
+        "themes                - List available themes",
+        "theme <name|number>   - Select a theme",
+        "os                    - Show OS info",
+        "pug                   - Display pug image"
+    };
+
+    printLine("Commands:\n");
+
+    const int numCommands = sizeof(commands) / sizeof(commands[0]);
+    for (int i = 0; i < numCommands; i++) {
+        printLine(commands[i]);
+    }
 }
+
 
 int precedence(char op) {
     if (op == '+' || op == '-') return 1;
@@ -133,6 +144,9 @@ void runCommand(String cmd) {
     }
     else if (cmd == "help") {
         showHelp();
+    }
+    else if (cmd=="pug") {
+        displayPug();
     }
     else {
         printLine("Unknown command.");

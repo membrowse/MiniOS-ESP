@@ -5,6 +5,7 @@
 #include "network.h"
 #include "theme.h"
 #include "commands.h"
+#include "pug.h"
 
 String input = "";
 
@@ -22,10 +23,16 @@ void setup() {
     printLine("Type commands in Serial.");
     printLine("> ");
 }
+bool screenLocked = false;
 
 void loop() {
+    if (screenLocked) {
+        return;
+    }
+
     while (Serial.available()) {
         char c = Serial.read();
+
         if (c == '\n') {
             clearScreen();
             printLine("> " + input);
