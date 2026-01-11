@@ -49,22 +49,35 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 
 ## Available Commands
 
+# MiniOS-ESP Commands
+
 | Command | Description | Example |
 |---------|-------------|---------|
 | `help` | Show all commands | `help` |
-| `os` | Display MiniOS logo | `os` |
+| `os` | Display MiniOS logo / OS info | `os` |
 | `version` | Show version info | `version` |
-| `wifi` | Connect to WiFi | `wifi` |
 | `time` | Show current time | `time` |
 | `synctime` | Sync time with NTP server | `synctime` |
+| `wifi` | Show WiFi info / connect to WiFi | `wifi` |
+| `scanwifi` | Scan nearby WiFi networks | `scanwifi` |
 | `write <file> <text>` | Write text to a file | `write notes.txt Hello` |
+| `append <file> <text>` | Append text to a file | `append notes.txt World` |
 | `read <file>` | Read file contents | `read notes.txt` |
 | `delete <file>` | Delete a file | `delete notes.txt` |
+| `ls` | List files | `ls` |
+| `mv <old> <new>` | Rename a file | `mv old.txt new.txt` |
+| `cp <src> <dst>` | Copy a file | `cp file1.txt file2.txt` |
 | `curl <url>` | Fetch URL content | `curl https://example.com` |
-| `calc <expression>` | Calculate expression | `calc 15 + 27 * 2` |
-| `themes` | List available themes | `themes` |
-| `theme <name\|number>` | Set display theme | `theme matrix` or `theme 0` |
-| `pug` | Display pug photo | `pug` |
+| `ping <host>` | Ping host (3 times) | `ping 8.8.8.8` |
+| `mem` | Show free heap memory | `mem` |
+| `uptime` | Show time since boot | `uptime` |
+| `reboot` | Reboot device | `reboot` |
+| `calc <expression>` | Evaluate mathematical expression | `calc 15 + 27 * 2` |
+| `themes` | List available display themes | `themes` |
+| `theme <name|number>` | Set display theme | `theme matrix` or `theme 0` |
+| `pug` | Display pug image | `pug` |
+| `screensaver` | Display screensaver | `screensaver` |
+
 
 ## Themes
 
