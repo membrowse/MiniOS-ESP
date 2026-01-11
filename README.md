@@ -74,7 +74,7 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 | `reboot` | Reboot device | `reboot` |
 | `calc <expression>` | Evaluate mathematical expression | `calc 15 + 27 * 2` |
 | `themes` | List available display themes | `themes` |
-| `theme <name|number>` | Set display theme | `theme matrix` or `theme 0` |
+| `theme <name\|number>` | Set display theme | `theme matrix` or `theme 0` |
 | `pug` | Display pug image | `pug` |
 | `screensaver` | Display screensaver | `screensaver` |
 
