@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <time.h>
+#include <ESP32Ping.h>
 
 void connectWiFi() {
     if (WiFi.status() == WL_CONNECTED) {
@@ -127,4 +128,27 @@ void curlURL(String url) {
     }
     
     http.end();
+}
+
+void scanWiFi() {
+    printLine("Scanning WiFi...");
+    int n = WiFi.scanNetworks();
+    if (n <= 0) {
+        printLine("No networks found.");
+        return;
+    }
+    for (int i = 0; i < n; i++) {
+        String lock = (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? "Open" : "Secured";
+        printLine(String(i) + ": " + WiFi.SSID(i) + " (" + String(WiFi.RSSI(i)) + " dBm) " + lock);
+    }
+}
+
+void pingHost(String host) {
+    printLine("Pinging " + host + "...");
+    bool ok = Ping.ping(host.c_str(), 3); 
+    if (ok) {
+        printLine("Ping OK, avg: " + String(Ping.averageTime()) + " ms");
+    } else {
+        printLine("Ping failed");
+    }
 }

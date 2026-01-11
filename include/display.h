@@ -5,11 +5,12 @@
 #include <Adafruit_ST7789.h>
 
 extern Adafruit_ST7789 tft;
-
+extern bool screenLocked;
 void initDisplay();
 void applyTheme();
 void clearScreen();
 void printLine(String s);
 void showLogo();
+void screensaver();
 
 #endif

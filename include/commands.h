@@ -7,5 +7,8 @@ void runCommand(String cmd);
 void showVersion();
 void showHelp();
 void calc(String expression);
+void showMem();
+void showUptime();
+void doReboot();
 
 #endif

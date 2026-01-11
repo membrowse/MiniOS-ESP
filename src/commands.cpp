@@ -5,6 +5,7 @@
 #include "theme.h"
 #include "config.h"
 #include "pug.h"
+#include <esp_system.h>
 
 void showVersion() {
     printLine(OS_VERSION);
@@ -14,18 +15,28 @@ void showVersion() {
 void showHelp() {
     const char* commands[] = {
         "write <file> <text>   - Write text to a file",
+        "append <file> <text>  - Append text to a file",
         "read <file>           - Read a file",
         "delete <file>         - Delete a file",
+        "ls                    - List files",
+        "mv <old> <new>        - Rename a file",
+        "cp <src> <dst>        - Copy a file",
         "version               - Show version",
         "time                  - Show current time",
         "synctime              - Sync time with server",
         "wifi                  - Show WiFi info",
+        "scanwifi              - Scan nearby WiFi networks",
         "curl <url>            - Fetch URL",
+        "ping <host>           - Ping host (3 times)",
+        "mem                   - Show free heap memory",
+        "uptime                - Show time since boot",
+        "reboot                - Reboot device",
         "calc <expression>     - Evaluate expression",
         "themes                - List available themes",
         "theme <name|number>   - Select a theme",
         "os                    - Show OS info",
-        "pug                   - Display pug image"
+        "pug                   - Display pug image",
+        "screensaver           - Display screensaver"
     };
 
     printLine("Commands:\n");
@@ -97,6 +108,32 @@ void calc(String expression) {
     printLine("Result: " + String(result));
 }
 
+void showMem() {
+    uint32_t bytes = ESP.getFreeHeap();
+    float kb = bytes / 1024.0;
+
+    printLine(
+        "Free heap: " +
+        String(bytes) + " bytes (" +
+        String(kb, 1) + " KB)"
+    );
+}
+
+
+void showUptime() {
+    unsigned long s = millis() / 1000;
+    unsigned long h = s / 3600;
+    unsigned long m = (s % 3600) / 60;
+    unsigned long sec = s % 60;
+    printLine("Uptime: " + String(h) + "h " + String(m) + "m " + String(sec) + "s");
+}
+
+void doReboot() {
+    printLine("Rebooting...");
+    delay(100);
+    ESP.restart();
+}
+
 void runCommand(String cmd) {
     cmd.trim();
     if (cmd.startsWith("write ")) {
@@ -108,6 +145,33 @@ void runCommand(String cmd) {
         String name = cmd.substring(6, sp);
         String data = cmd.substring(sp + 1);
         writeFile(name, data);
+    }
+    else if (cmd.startsWith("append ")) {
+        int sp = cmd.indexOf(' ', 7);
+        if (sp == -1) {
+            printLine("Usage: append filename text");
+            return;
+        }
+        String name = cmd.substring(7, sp);
+        String data = cmd.substring(sp + 1);
+        appendFile(name, data);
+    }
+    else if (cmd == "ls") {
+        listFiles();
+    }
+    else if (cmd.startsWith("mv ")) {
+        int sp = cmd.indexOf(' ', 3);
+        if (sp == -1) { printLine("Usage: mv oldname newname"); return; }
+        String a = cmd.substring(3, sp);
+        String b = cmd.substring(sp + 1);
+        renameFile(a, b);
+    }
+    else if (cmd.startsWith("cp ")) {
+        int sp = cmd.indexOf(' ', 3);
+        if (sp == -1) { printLine("Usage: cp src dst"); return; }
+        String a = cmd.substring(3, sp);
+        String b = cmd.substring(sp + 1);
+        copyFile(a, b);
     }
     else if (cmd.startsWith("read ")) {
         readFile(cmd.substring(5));
@@ -127,11 +191,26 @@ void runCommand(String cmd) {
     else if (cmd == "wifi") {
         connectWiFi();
     }
+    else if (cmd == "scanwifi") {
+        scanWiFi();
+    }
     else if (cmd.startsWith("curl ")) {
         curlURL(cmd.substring(5));
     }
+    else if (cmd.startsWith("ping ")) {
+        pingHost(cmd.substring(5));
+    }
     else if (cmd == "os") {
         showLogo();
+    }
+    else if (cmd == "mem") {
+        showMem();
+    }
+    else if (cmd == "uptime") {
+        showUptime();
+    }
+    else if (cmd == "reboot") {
+        doReboot();
     }
     else if (cmd.startsWith("calc ")) {
         calc(cmd.substring(5));
@@ -147,6 +226,9 @@ void runCommand(String cmd) {
     }
     else if (cmd=="pug") {
         displayPug();
+    }
+    else if (cmd=="screensaver") {
+        screensaver();
     }
     else {
         printLine("Unknown command.");
