@@ -11,7 +11,7 @@ build/
 .gcc-flags.json
 
 
-include/config.h
+
 
 
 .vscode/
