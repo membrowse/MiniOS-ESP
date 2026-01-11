@@ -51,32 +51,41 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 
 # MiniOS-ESP Commands
 
+# MiniOS Command Reference
+
 | Command | Description | Example |
 |---------|-------------|---------|
 | `help` | Show all commands | `help` |
-| `os` | Display MiniOS logo / OS info | `os` |
+| `os` | Display MiniOS logo | `os` |
 | `version` | Show version info | `version` |
-| `time` | Show current time | `time` |
-| `synctime` | Sync time with NTP server | `synctime` |
-| `wifi` | Show WiFi info / connect to WiFi | `wifi` |
-| `scanwifi` | Scan nearby WiFi networks | `scanwifi` |
+| `fetch` | Show system information | `fetch` |
+| **File System** | | |
 | `write <file> <text>` | Write text to a file | `write notes.txt Hello` |
 | `append <file> <text>` | Append text to a file | `append notes.txt World` |
 | `read <file>` | Read file contents | `read notes.txt` |
 | `delete <file>` | Delete a file | `delete notes.txt` |
-| `ls` | List files | `ls` |
+| `ls` | List all files | `ls` |
 | `mv <old> <new>` | Rename a file | `mv old.txt new.txt` |
 | `cp <src> <dst>` | Copy a file | `cp file1.txt file2.txt` |
+| **Network** | | |
+| `wifi` | Connect to WiFi / show WiFi info | `wifi` |
+| `scanwifi` | Scan nearby WiFi networks | `scanwifi` |
 | `curl <url>` | Fetch URL content | `curl https://example.com` |
-| `ping <host>` | Ping host (3 times) | `ping 8.8.8.8` |
+| `ping <host>` | Ping host 3 times | `ping 8.8.8.8` |
+| **Time** | | |
+| `time` | Show current time | `time` |
+| `synctime` | Sync time with NTP server | `synctime` |
+| **System** | | |
 | `mem` | Show free heap memory | `mem` |
 | `uptime` | Show time since boot | `uptime` |
 | `reboot` | Reboot device | `reboot` |
-| `calc <expression>` | Evaluate mathematical expression | `calc 15 + 27 * 2` |
-| `themes` | List available display themes | `themes` |
+| `calc <expression>` | Evaluate math expression | `calc 15 + 27 * 2` |
+| **Display** | | |
+| `themes` | List available themes | `themes` |
 | `theme <name\|number>` | Set display theme | `theme matrix` or `theme 0` |
 | `pug` | Display pug image | `pug` |
-| `screensaver` | Display screensaver | `screensaver` |
+| `screensaver <number>` | Display screensaver animation | `screensaver 3` |
+
 
 
 ## Themes
@@ -89,6 +98,16 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 - `dark-orange` (5) — Orange on dark  
 - `purple` (6) — Magenta on dark  
 - `red night` (7) — Red on dark  
+
+## Screensaver Modes
+1. Diagonal Waves
+2. Rainbow Wave
+3. Color Grid
+4. Plasma
+5. Checkerboard
+6. Fire
+7. Starfield
+
 
 ## Project Structure
 

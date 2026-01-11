@@ -20,6 +20,8 @@ void setup() {
     }
     
     printLine("MiniOS booted.");
+    connectWiFi();
+    printLine("");
     printLine("Type commands in Serial.");
     printLine("> ");
 }
@@ -38,7 +40,8 @@ void loop() {
             printLine("> " + input);
             runCommand(input);
             input = "";
-            printLine("\n> ");
+            printLine("");
+            printLine("> ");
         } else {
             input += c;
         }

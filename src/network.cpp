@@ -20,11 +20,13 @@ void connectWiFi() {
         attempts++;
     }
     if (WiFi.status() == WL_CONNECTED) {
-        printLine("\nConnected!");
+        printLine("");
+        printLine("Connected!");
         printLine("IP: " + WiFi.localIP().toString());
         syncTime();
     } else {
-        printLine("\nFailed to connect.");
+        printLine("");
+        printLine("Failed to connect.");
     }
 }
 
@@ -46,10 +48,12 @@ void syncTime() {
     }
     
     if (time(nullptr) > 100000) {
-        printLine("\nTime synced!");
+        printLine("");
+        printLine("Time synced!");
         printLine(getTime());
     } else {
-        printLine("\nTime sync failed.");
+        printLine("");
+        printLine("Time sync failed.");
     }
 }
 

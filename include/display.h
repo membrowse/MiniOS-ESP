@@ -12,5 +12,5 @@ void clearScreen();
 void printLine(String s);
 void showLogo();
 void screensaver();
-
+void screensaver(int mode);
 #endif

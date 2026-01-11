@@ -6,6 +6,7 @@
 #include "config.h"
 #include "pug.h"
 #include <esp_system.h>
+#include <WiFi.h>
 
 void showVersion() {
     printLine(OS_VERSION);
@@ -36,7 +37,8 @@ void showHelp() {
         "theme <name|number>   - Select a theme",
         "os                    - Show OS info",
         "pug                   - Display pug image",
-        "screensaver           - Display screensaver"
+        "screensaver <number>  - Display screensaver",
+        "fetch                 - Show system information"
     };
 
     printLine("Commands:\n");
@@ -134,6 +136,76 @@ void doReboot() {
     ESP.restart();
 }
 
+void showChipInfo() {
+    printLine(
+        "Chip: ESP32 rev " + String(ESP.getChipRevision())
+    );
+}
+void showCPUInfo() {
+    printLine(
+        "CPU: " +
+        String(ESP.getCpuFreqMHz()) + " MHz"
+    );
+}
+void showFlashInfo() {
+    uint32_t flashSize = ESP.getFlashChipSize() / 1024 / 1024;
+    printLine(
+        "Flash: " +
+        String(flashSize) + " MB"
+    );
+}
+void showWiFiInfo() {
+    if (WiFi.isConnected()) {
+        printLine(
+            "WiFi: connected (" +
+            WiFi.localIP().toString() + ")"
+        );
+    } else {
+        printLine("WiFi: disconnected");
+    }
+}
+
+void fetch() {
+    showLogo();
+    printLine("");
+    showUptime();
+    showMem();
+    showChipInfo();
+    showFlashInfo();
+    showCPUInfo();
+    showWiFiInfo();
+    
+    printLine("");
+    
+    int startX = 10;
+    int startY = tft.getCursorY() + 5;
+    int blockWidth = 15;
+    int blockHeight = 10;
+    tft.fillRect(startX + blockWidth * 0, startY, blockWidth, blockHeight, 0x0000);
+    tft.fillRect(startX + blockWidth * 1, startY, blockWidth, blockHeight, 0x7800);
+    tft.fillRect(startX + blockWidth * 2, startY, blockWidth, blockHeight, 0x03E0);
+    tft.fillRect(startX + blockWidth * 3, startY, blockWidth, blockHeight, 0x7BE0);
+    tft.fillRect(startX + blockWidth * 4, startY, blockWidth, blockHeight, 0x0010);
+    tft.fillRect(startX + blockWidth * 5, startY, blockWidth, blockHeight, 0x780F);
+    tft.fillRect(startX + blockWidth * 6, startY, blockWidth, blockHeight, 0x03EF);
+    tft.fillRect(startX + blockWidth * 7, startY, blockWidth, blockHeight, 0xC618);
+
+    startY += blockHeight;
+
+    tft.fillRect(startX + blockWidth * 0, startY, blockWidth, blockHeight, 0x4208);
+    tft.fillRect(startX + blockWidth * 1, startY, blockWidth, blockHeight, 0xF800);
+    tft.fillRect(startX + blockWidth * 2, startY, blockWidth, blockHeight, 0x07E0);
+    tft.fillRect(startX + blockWidth * 3, startY, blockWidth, blockHeight, 0xFFE0);
+    tft.fillRect(startX + blockWidth * 4, startY, blockWidth, blockHeight, 0x001F);
+    tft.fillRect(startX + blockWidth * 5, startY, blockWidth, blockHeight, 0xF81F);
+    tft.fillRect(startX + blockWidth * 6, startY, blockWidth, blockHeight, 0x07FF);
+    tft.fillRect(startX + blockWidth * 7, startY, blockWidth, blockHeight, 0xFFFF);
+
+    tft.setCursor(5, startY + blockHeight + 5);
+
+    }
+
+
 void runCommand(String cmd) {
     cmd.trim();
     if (cmd.startsWith("write ")) {
@@ -227,9 +299,33 @@ void runCommand(String cmd) {
     else if (cmd=="pug") {
         displayPug();
     }
-    else if (cmd=="screensaver") {
-        screensaver();
+    else if (cmd == "screensaver" || cmd.startsWith("screensaver ")) {
+    if (cmd == "screensaver") {
+        printLine("Usage: screensaver <mode>");
+        printLine("Available modes:");
+        printLine("1: Diagonal Waves");
+        printLine("2: Rainbow Wave");
+        printLine("3: Color Grid");
+        printLine("4: Plasma");
+        printLine("5: Checkerboard");
+        printLine("6: Fire");
+        printLine("7: Starfield");
+        return;
     }
+    
+    int mode = cmd.substring(12).toInt();
+    if (mode < 1 || mode > 7) {
+        printLine("Invalid mode. Use 1-7.");
+        printLine("Type 'screensaver' for help.");
+        return;
+    }
+    
+    screensaver(mode);
+    }
+    else if (cmd=="fetch") {
+        fetch();
+    }
+    
     else {
         printLine("Unknown command.");
     }
