@@ -49,9 +49,6 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 
 ## Available Commands
 
-# MiniOS-ESP Commands
-
-# MiniOS Command Reference
 
 | Command | Description | Example |
 |---------|-------------|---------|
