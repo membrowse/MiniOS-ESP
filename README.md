@@ -162,4 +162,4 @@ GitHub Repository: [https://github.com/VuqarAhadli/MiniOS-ESP](https://github.co
 
 ## Version
 
-MiniOS-ESP v1.0.1
+MiniOS-ESP v1.2.0
