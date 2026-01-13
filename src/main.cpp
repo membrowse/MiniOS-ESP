@@ -31,6 +31,7 @@ void loop() {
     if (screenLocked) {
         return;
     }
+    checkAlarm();
 
     while (Serial.available()) {
         char c = Serial.read();

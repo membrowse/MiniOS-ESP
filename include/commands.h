@@ -10,5 +10,32 @@ void calc(String expression);
 void showMem();
 void showUptime();
 void doReboot();
+void showChipInfo();
+void showCPUInfo();
+void showFlashInfo();
+void showWiFiInfo();
+void fetch();
+void echoCommand(String text);
+void addToHistory(String cmd);
+void showHistory();
+void showCalendar();
+void timerCommand(int seconds);
+void stopwatchCommand();
+void setAlarm(String timeStr);
+void checkAlarm();
+void hexCommand(String numStr);
+void binCommand(String numStr);
+void base64Command(String operation, String text);
+String base64Encode(String input);
+String base64Decode(String input);
+
+struct Alarm {
+    bool active;
+    int hour;
+    int minute;
+    String message;
+};
+
+extern Alarm systemAlarm;
 
 #endif

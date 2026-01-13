@@ -1,0 +1,70 @@
+File System Enhancements
+
+find <pattern> - Search files by name
+cat <file> or catn <file> - Read with line numbers
+df - Show disk space usage
+grep <file> <text> - Search inside files
+wc <file> - Word/line count
+tail <file> - Show last N lines
+head <file> - Show first N lines
+mkdir <dir> - Create directories
+rmdir <dir> - Remove directories
+
+Network Features
+
+wget <url> <file> - Download files
+weather <city> - Weather info (needs API)
+speedtest - Network speed test
+whois <domain> - Domain info
+dns <domain> - DNS lookup
+mac - Show MAC address
+
+System Tools
+
+monitor or top - Real-time system stats
+ps - Show running tasks
+kill <task> - Stop task
+gpio <pin> <on/off> - GPIO control
+adc <pin> - Read analog pin
+pwm <pin> <duty> - PWM output
+temp - Read internal temperature sensor
+
+Utilities
+
+history - Command history
+clear - Clear screen
+calendar - Show calendar
+timer <seconds> - Countdown timer
+stopwatch - Stopwatch function
+alarm <time> - Set alarm
+hex <number> - Dec to hex converter
+bin <number> - Dec to binary converter
+base64 <encode/decode> <text> - Base64 operations
+
+Games/Fun
+
+snake - Snake game
+pong - Pong game
+quiz - Trivia quiz
+dice - Roll dice
+coin - Flip coin
+fortune - Random quote
+matrix - Matrix animation
+
+Advanced
+
+cron <time> <cmd> - Schedule commands
+log <message> - Write to system log
+backup - Backup all files
+restore - Restore from backup
+encrypt <file> - Encrypt file
+decrypt <file> - Decrypt file
+hash <text> - Generate hash
+ota <url> - OTA firmware update
+
+Configuration
+
+set <key> <value> - Set config variable
+get <key> - Get config variable
+env - Show all environment variables
+alias <name> <cmd> - Create command alias
