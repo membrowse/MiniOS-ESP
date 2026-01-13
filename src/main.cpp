@@ -6,6 +6,7 @@
 #include "theme.h"
 #include "commands.h"
 #include "pug.h"
+#include "timeutils.h"
 
 String input = "";
 

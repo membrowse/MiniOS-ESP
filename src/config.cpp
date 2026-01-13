@@ -1,8 +1,8 @@
 #include "config.h"
 
 
-const char* WIFI_SSID = "tt";
-const char* WIFI_PASS = "tt";
+const char* WIFI_SSID = "";
+const char* WIFI_PASS = "";
 const char* NTP_SERVER = "pool.ntp.org";
 const long GMT_OFFSET = 4 * 3600; /* you can change it depending on your timezone */
 const int DAYLIGHT_OFFSET = 0;

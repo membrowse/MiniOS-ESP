@@ -1,6 +1,7 @@
 #include "network.h"
 #include "display.h"
 #include "config.h"
+#include <timeutils.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <time.h>
@@ -30,51 +31,7 @@ void connectWiFi() {
     }
 }
 
-void syncTime() {
-    if (WiFi.status() != WL_CONNECTED) {
-        printLine("WiFi not connected.");
-        printLine("Use 'wifi' first.");
-        return;
-    }
-    
-    printLine("Syncing time...");
-    configTime(GMT_OFFSET, DAYLIGHT_OFFSET, NTP_SERVER);
-    
-    int attempts = 0;
-    while (time(nullptr) < 100000 && attempts < 20) {
-        delay(500);
-        Serial.print(".");
-        attempts++;
-    }
-    
-    if (time(nullptr) > 100000) {
-        printLine("");
-        printLine("Time synced!");
-        printLine(getTime());
-    } else {
-        printLine("");
-        printLine("Time sync failed.");
-    }
-}
 
-String getTime() {
-    time_t now = time(nullptr);
-    
-    if (now < 100000) {
-        return "Time not synced";
-    }
-    
-    struct tm* t = localtime(&now);
-    char buf[40];
-    sprintf(buf, "%04d-%02d-%02d  %02d:%02d:%02d",
-            t->tm_year + 1900,
-            t->tm_mon + 1,
-            t->tm_mday,
-            t->tm_hour,
-            t->tm_min,
-            t->tm_sec);
-    return String(buf);
-}
 
 void curlURL(String url) {
     if (WiFi.status() != WL_CONNECTED) {
