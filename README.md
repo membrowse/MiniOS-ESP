@@ -49,9 +49,6 @@ A lightweight command-line operating system for ESP32 with ST7789 display suppor
 
 ## Available Commands
 
-# MiniOS-ESP Commands
-
-# MiniOS Command Reference
 
 | Command | Description | Example |
 |---------|-------------|---------|
@@ -162,4 +159,4 @@ GitHub Repository: [https://github.com/VuqarAhadli/MiniOS-ESP](https://github.co
 
 ## Version
 
-MiniOS-ESP v1.0.1
+MiniOS-ESP v1.2.0
