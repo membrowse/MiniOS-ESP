@@ -27,7 +27,7 @@ MiniOS-ESP is a lightweight, Unix-like command-line operating system designed fo
 - **Multi-process architecture** with scheduler
 
 ### Version
-Current Version: **MiniOS-ESP v1.2.0**
+Current Version: **MiniOS-ESP v2.0.0**
 
 ---
 
@@ -119,7 +119,7 @@ ESP32              ST7789 Display
 ### Physical Setup Tips
 
 1. Use short wires (< 15cm) for stable SPI communication
-2. Add a 10µF capacitor between VCC and GND near the display
+2. Add a 10µF capacitor between VCC and GND near the display (optional)
 3. Ensure solid GND connection between ESP32 and display
 4. Mount display securely to prevent connector damage
 
@@ -159,10 +159,12 @@ Handles TFT display operations and rendering.
 - `showLogo()` - Display MiniOS ASCII logo
 
 **Screensaver Modes:**
+> **Experimental feature.** Screensaver modes may cause input latency.
+
 1. **Wave Patterns** - Sinusoidal color waves
 2. **Rainbow** - Multi-hue gradient animation
 3. **Spiral** - Polar coordinate transformation
-4. **Matrix** - Falling character columns
+4. **Matrix** - Falling character columns            
 5. **Fire** - Heat gradient simulation
 6. **Starfield** - Twinkling stars
 7. **Tunnel** - Perspective effect
@@ -303,7 +305,7 @@ Show MiniOS version and repository.
 
 **Output:**
 ```
-MiniOS MiniOS-ESP v1.2.0
+MiniOS MiniOS-ESP v2.0.0
 Repository: github.com/VuqarAhadli
 ```
 
@@ -311,7 +313,8 @@ Repository: github.com/VuqarAhadli
 Display comprehensive system information.
 
 **Information Shown:**
-- ASCII logo
+- OS logo
+- OS version
 - System uptime
 - Memory statistics
 - Chip model and revision
@@ -327,7 +330,7 @@ Display MiniOS ASCII art logo.
 Clear display and reset cursor.
 
 #### `mem`
-Show heap memory statistics.
+Show memory statistics.
 
 **Output Format:**
 ```
@@ -506,10 +509,10 @@ Time: 342ms
 <html>...
 ```
 
-**Supported Protocols:** HTTP only (HTTPS not supported)
+**Supported Protocols:** HTTP only 
 
 #### `ping <host>`
-Send ICMP echo requests.
+Send ICMP echo requests. 
 
 **Example:**
 ```
@@ -529,7 +532,7 @@ Ping OK, avg: 23 ms
 #### `time`
 Display current date and time.
 
-**Format:** `YYYY-MM-DD  HH:MM:SS`
+**Format:** `YYYY-MM-DD HH:MM:SS`
 
 **Example:**
 ```
@@ -537,10 +540,14 @@ Display current date and time.
 2025-01-15  14:30:45
 ```
 
-**Requirement:** Must sync time first with `synctime`
+**Requirement:** Time must be synchronized automatically via `wifi` (or manually via the deprecated `synctime` command if necessary).
 
 #### `synctime`
-Synchronize with NTP server.
+> **Deprecated.** Time synchronization is handled automatically by the `wifi` command.  
+> This command remains available only for debugging or recovery.
+
+
+Synchronizes the system time with an NTP server.
 
 **Example:**
 ```
@@ -780,7 +787,7 @@ Theme set: purple
 
 #### `screensaver <mode>`
 Run animated screensaver.
-
+> **Experimental feature.** Screensaver modes may cause input latency.
 **Modes:**
 1. **Wave Patterns** - Sinusoidal cyan/blue waves
 2. **Rainbow** - Flowing rainbow gradient
@@ -802,7 +809,7 @@ Press ENTER to exit...
 - Runs at ~20 FPS
 
 #### `pug`
-Display pixel art pug image.
+Display pug image.
 
 ---
 
@@ -905,7 +912,7 @@ pio device monitor --baud 115200
    - File → Preferences
    - Add to "Additional Board Manager URLs":
      ```
-     https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+     https://espressif.github.io/arduino-esp32/package_esp32_index.json
      ```
    - Tools → Board → Board Manager
    - Search "esp32" and install
@@ -935,7 +942,8 @@ MiniOS-ESP/
 │   ├── theme.cpp          # Theme management
 │   ├── timeutils.cpp      # Time and alarm functions
 │   ├── kernel.cpp         # Process management
-│   └── pug.cpp            # Pixel art data
+│   ├── config.cpp         # Configuration 
+│   └── pug.cpp            # PROGMEM pug photo data
 │
 ├── include/               # Header files
 │   ├── commands.h
@@ -958,7 +966,7 @@ MiniOS-ESP/
 
 ### Configuration
 
-#### `config.h` - System Configuration
+#### `config.h` & `config.cpp` - System Configuration
 
 ```cpp
 // Network
@@ -970,10 +978,10 @@ const int DAYLIGHT_OFFSET = 0;
 #define TFT_CS   5
 #define TFT_DC   2
 #define TFT_RST  4
-#define MAX_Y    220  // Text area height
+#define MAX_Y    230  // Text area height
 
 // System
-const char* OS_VERSION = "MiniOS-ESP v1.2.0";
+const char* OS_VERSION = "MiniOS-ESP v2.0.0";
 #define HISTORY_SIZE 10  // Command history entries
 ```
 
@@ -1253,123 +1261,166 @@ if (ESP.getFreeHeap() < 10000) {
 1. Erase flash completely:
 ```bash
 esptool.py --port /dev/ttyUSB0 erase_flash
-```
+````
 
 2. Re-upload firmware
-3. Check `platformio.ini` board settings
+3. Verify `platformio.ini` board settings
 4. Increase task stack sizes
 
-Command Errors
-"Unknown command"
+---
 
-Check spelling
-Use help to list available commands
-Commands are case-sensitive
+### Command Errors
 
-"Usage: ..." messages
+#### "Unknown command"
 
-Review command syntax in Command Reference
-Ensure proper spacing and argument order
+**Causes:**
 
-Performance Issues
-Slow display updates
-Solutions:
+* Typographical error
+* Command not supported
+* Incorrect command category
 
-Reduce text output
-Use tft.startWrite() / tft.endWrite() for batching
-Increase SPI speed (if stable)
+**Solutions:**
 
-Screensaver lag
-Solutions:
+* Check spelling carefully
+* Use `help` to list available commands
+* Note that commands are **case-sensitive**
 
-Reduce frame rate in screensaver() function
-Simplify mathematical operations
-Use lookup tables for trigonometric functions
+---
 
+#### "Usage: ..."
 
-Best Practices
-Code Style
+**Cause:**
 
-Use descriptive variable names
-Comment complex algorithms
-Follow existing naming conventions
-Keep functions under 50 lines
-Use const for constants
+* Incorrect argument count or order
 
-Resource Management
+**Solutions:**
 
-Always close files after use
-Free allocated memory
-Use RAII pattern where possible
-Monitor heap in long-running tasks
+* Review command syntax in the **Command Reference**
+* Ensure proper spacing between arguments
+* Verify required and optional parameters
 
-Error Handling
+---
 
-Check return values
-Provide user feedback
-Log errors to serial
-Fail gracefully
+### Performance Issues
 
-Security
+#### Slow display updates
 
-Never hardcode WiFi credentials in repository
-Use environment variables for sensitive data
-Validate user input
-Limit network request sizes
+**Causes:**
 
+* Excessive screen redraws
+* High SPI traffic
+* Unbatched draw calls
 
-License
-MIT License - See repository for full text
-Contributing
-Contributions welcome! Please:
+**Solutions:**
 
-Fork the repository
-Create feature branch
-Test thoroughly
-Submit pull request with description
+* Reduce unnecessary text output
+* Use `tft.startWrite()` / `tft.endWrite()` for batching
+* Increase SPI speed (only if stable)
 
-Support
+---
 
-Issues: GitHub Issues
-Discussions: GitHub Discussions
-Email: Via GitHub profile
+#### Screensaver lag
 
-Changelog
-v1.2.0 (Current)
+**Causes:**
 
-Added FreeRTOS kernel
-Implemented process management
-Enhanced screensavers with 7 modes
-Improved calculator with advanced functions
-Added Base64 encoding/decoding
-Better WiFi connection handling
-System statistics display
+* Heavy floating-point math
+* Complex per-frame calculations
 
-v1.1.0
+**Solutions:**
 
-Added alarm system
-Calendar view
-Timer and stopwatch
-Multiple themes
-Improved file operations
+* Reduce frame rate in the `screensaver()` function
+* Simplify mathematical operations
+* Use lookup tables for trigonometric functions
 
-v1.0.0
+---
 
-Initial release
-Basic file system
-WiFi connectivity
-Simple calculator
-Display support
+### Best Practices
 
+#### Code Style
 
-Acknowledgments
+* Use descriptive variable names
+* Comment complex algorithms
+* Follow existing naming conventions
+* Keep functions under 50 lines
+* Use `const` for constants
 
-Adafruit - GFX and ST7789 libraries
-Espressif - ESP32 Arduino Core
-FreeRTOS - Real-time operating system kernel
+#### Resource Management
 
+* Always close files after use
+* Free dynamically allocated memory
+* Use RAII patterns where possible
+* Monitor heap usage in long-running tasks
 
-Author: VuqarAhadli
-Repository: https://github.com/VuqarAhadli/MiniOS-ESP
-Documentation Version: 1.2.0
-Last Updated: January 2025
+#### Error Handling
+
+* Always check return values
+* Provide clear user feedback
+* Log errors to serial output
+* Fail gracefully whenever possible
+
+---
+
+### License
+
+MIT License — see repository for full text.
+
+---
+
+### Contributing
+
+Contributions are welcome. Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Test changes thoroughly
+4. Submit a pull request with a clear description
+
+---
+
+## Changelog
+
+### v2.0.0
+
+* Added FreeRTOS kernel
+* Implemented process management
+* Enhanced screensavers with 7 modes (experimental)
+* Improved output formatting
+
+### v1.2.0
+
+* Improved calculator with advanced functions
+* Added Base64 encoding/decoding
+* Improved WiFi connection handling
+* Added system statistics display
+
+### v1.1.0
+
+* Added alarm system
+* Calendar view
+* Timer and stopwatch
+* Multiple themes
+* Improved file operations
+
+### v1.0.0
+
+* Initial release
+* Basic file system
+* WiFi connectivity
+* Simple calculator
+* Display support
+
+---
+
+## Acknowledgments
+
+* Adafruit — GFX and ST7789 libraries
+* Espressif — ESP32 Arduino Core
+* FreeRTOS — Real-time operating system kernel
+
+---
+
+**Author:** Vuqar Ahadli
+**Repository:** [https://github.com/VuqarAhadli/MiniOS-ESP](https://github.com/VuqarAhadli/MiniOS-ESP)
+**Documentation Version:** 2.0.0
+**Last Updated:** January 2026
+
