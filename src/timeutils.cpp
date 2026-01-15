@@ -9,13 +9,10 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <time.h>
-
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 Alarm systemAlarm = {false, 0, 0, ""};
-
-
-
-
 
 void syncTime() {
     if (WiFi.status() != WL_CONNECTED) {
@@ -29,7 +26,7 @@ void syncTime() {
     
     int attempts = 0;
     while (time(nullptr) < 100000 && attempts < 20) {
-        delay(500);
+        vTaskDelay(500 / portTICK_PERIOD_MS);  
         Serial.print(".");
         attempts++;
     }
@@ -41,6 +38,12 @@ void syncTime() {
     } else {
         printLine("");
         printLine("Time sync failed.");
+    }
+    
+    
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    while (Serial.available() > 0) {
+        Serial.read();
     }
 }
 
@@ -143,13 +146,13 @@ void timerCommand(int seconds) {
             printLine(String(remaining) + " seconds remaining...");
         }
         
-        delay(100);
+        vTaskDelay(100 / portTICK_PERIOD_MS);  
     }
     
     printLine("Timer finished!");
     for (int i = 0; i < 3; i++) {
         printLine("BEEP!");
-        delay(200);
+        vTaskDelay(200 / portTICK_PERIOD_MS);  
     }
 }
 
@@ -206,10 +209,6 @@ void stopwatchCommand() {
         }
     }
 }
-
-
-
-
 
 void setAlarm(String timeStr) {
     int colonPos = timeStr.indexOf(':');

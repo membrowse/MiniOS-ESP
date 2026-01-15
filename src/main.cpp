@@ -7,45 +7,100 @@
 #include "commands.h"
 #include "pug.h"
 #include "timeutils.h"
+#include "kernel.h"
 
 String input = "";
+bool screenLocked = false;
+bool inputLocked = false;
+
+void initProcess(void *parameter) {
+    printLine("MiniOS - FreeRTOS Kernel");
+    
+    initThemes();
+    printLine("[SYSTEM] Display initialized");
+    
+    if (!initFilesystem()) {
+        printLine("[ERROR] Filesystem failed");
+        vTaskDelete(NULL);
+        return;
+    }
+    
+    printLine("[SYSTEM] Filesystem initialized");
+    
+    printLine("MiniOS Ready");
+    printLine("Type 'help' for commands");
+    printLine("");
+    
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    vTaskDelete(NULL);
+}
+
+void serialInputProcess(void *parameter) {
+    const TickType_t delay = 10 / portTICK_PERIOD_MS;
+    
+    while (1) {
+        
+        if (!screenLocked && !inputLocked && Serial.available()) {
+            char c = Serial.read();
+
+            if (c == '\n') {
+                printLine("> " + input);
+                runCommand(input);
+                input = "";
+            } else if (c == '\b' || c == 127) {
+                if (input.length() > 0) {
+                    input.remove(input.length() - 1);
+                    Serial.write('\b');
+                    Serial.write(' ');
+                    Serial.write('\b');
+                }
+            } else {
+                input += c;
+                Serial.write(c);  
+            }
+        }
+        vTaskDelay(delay);
+    }
+}
+
+void alarmCheckProcess(void *parameter) {
+    const TickType_t delay = 1000 / portTICK_PERIOD_MS;
+    
+    while (1) {
+        if (!screenLocked) {
+            checkAlarm();
+        }
+        vTaskDelay(delay);
+    }
+}
+
+void watchdogProcess(void *parameter) {
+    const TickType_t delay = 5000 / portTICK_PERIOD_MS;
+    
+    while (1) {
+        vTaskDelay(delay);
+    }
+}
 
 void setup() {
     Serial.begin(115200);
+    delay(1000);
+    
+    Serial.println("MiniOS - FreeRTOS Kernel");
+    Serial.println("Initializing...");
     
     initDisplay();
-    initThemes();
     
-    if (!initFilesystem()) {
-        while (1);
-    }
+    kernelInit();
     
-    printLine("MiniOS booted.");
-    connectWiFi();
-    printLine("");
-    printLine("Type commands in Serial.");
-    printLine("> ");
+    createProcess(initProcess, "init", 4096, 1);
+    createProcess(serialInputProcess, "shell", 8192, 2);
+    createProcess(alarmCheckProcess, "alarm", 1024, 1);
+    createProcess(watchdogProcess, "watchdog", 1024, 0);
+    
+    createProcess(kernelScheduler, "scheduler", 2048, KERNEL_PRIORITY);
 }
-bool screenLocked = false;
 
 void loop() {
-    if (screenLocked) {
-        return;
-    }
-    checkAlarm();
-
-    while (Serial.available()) {
-        char c = Serial.read();
-
-        if (c == '\n') {
-            clearScreen();
-            printLine("> " + input);
-            runCommand(input);
-            input = "";
-            printLine("");
-            printLine("> ");
-        } else {
-            input += c;
-        }
-    }
+    vTaskDelay(portMAX_DELAY);
 }

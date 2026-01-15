@@ -6,20 +6,98 @@
 #include <HTTPClient.h>
 #include <time.h>
 #include <ESP32Ping.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
+String WIFI_SSID = "";
+String WIFI_PASS = "";
+
+extern bool inputLocked;
 
 void connectWiFi() {
+    inputLocked = true;
+    vTaskDelay(100 / portTICK_PERIOD_MS);  
+    
+    while (Serial.available() > 0) {
+        Serial.read();
+    }
+    
+    printLine("Enter SSID: ");
+    
+    WIFI_SSID = "";
+    while (true) {
+        if (Serial.available()) {
+            char c = Serial.read();
+            if (c == '\n' || c == '\r') {
+                if (WIFI_SSID.length() > 0) {
+                    Serial.println();
+                    break;
+                }
+            } else if (c == '\b' || c == 127) {
+                if (WIFI_SSID.length() > 0) {
+                    WIFI_SSID.remove(WIFI_SSID.length() - 1);
+                    Serial.write('\b');
+                    Serial.write(' ');
+                    Serial.write('\b');
+                }
+            } else if (c >= 32 && c <= 126) {  // Printable characters only
+                WIFI_SSID += c;
+                Serial.write(c);
+            }
+        }
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+    WIFI_SSID.trim();
+    
+    // Clear buffer again
+    while (Serial.available() > 0) {
+        Serial.read();
+    }
+    
+    printLine("Enter Password: ");
+    
+    WIFI_PASS = "";
+    while (true) {
+        if (Serial.available()) {
+            char c = Serial.read();
+            if (c == '\n' || c == '\r') {
+                if (WIFI_PASS.length() > 0) {
+                    Serial.println();
+                    break;
+                }
+            } else if (c == '\b' || c == 127) {
+                if (WIFI_PASS.length() > 0) {
+                    WIFI_PASS.remove(WIFI_PASS.length() - 1);
+                    Serial.write('\b');
+                    Serial.write(' ');
+                    Serial.write('\b');
+                }
+            } else if (c >= 32 && c <= 126) {  // Printable characters only
+                WIFI_PASS += c;
+                Serial.write('*');  // Show asterisks
+            }
+        }
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+    WIFI_PASS.trim();
+    
+    inputLocked = false;  // Unlock the shell
+    
     if (WiFi.status() == WL_CONNECTED) {
         printLine("Already connected.");
         return;
     }
-    printLine("Connecting to WiFi...");
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    
+    printLine("Connecting to: " + WIFI_SSID);
+    WiFi.begin(WIFI_SSID.c_str(), WIFI_PASS.c_str());
+    
     int attempts = 0;
     while (WiFi.status() != WL_CONNECTED && attempts < 20) {
-        delay(500);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
         Serial.print(".");
         attempts++;
     }
+    
     if (WiFi.status() == WL_CONNECTED) {
         printLine("");
         printLine("Connected!");
@@ -30,8 +108,6 @@ void connectWiFi() {
         printLine("Failed to connect.");
     }
 }
-
-
 
 void curlURL(String url) {
     if (WiFi.status() != WL_CONNECTED) {

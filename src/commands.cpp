@@ -6,6 +6,7 @@
 #include "config.h"
 #include "pug.h"
 #include "timeutils.h"
+#include "kernel.h"
 #include <esp_system.h>
 #include <WiFi.h>
 #include <math.h>
@@ -23,8 +24,8 @@ int historyCount = 0;
 
 
 void showVersion() {
-    printLine(OS_VERSION);
-    printLine("Check: https://github.com/VuqarAhadli");
+    printLine("MiniOS " + String(OS_VERSION));
+    printLine("Repository: github.com/VuqarAhadli");
 }
 
 
@@ -150,96 +151,88 @@ void base64Command(String operation, String text) {
 
 
 void showHelp() {
-    printLine("MiniOS Help Categories:");
+    printLine("MiniOS Command Help");
     printLine("");
-    printLine("help file     - File commands");
-    printLine("help system   - System commands");
-    printLine("help network  - Network commands");
-    printLine("help utils    - Utility commands");
-    printLine("help time     - Time commands");
-    printLine("help display  - Display commands");
-    printLine("");
-    printLine("Type help <category>");
+    printLine("  help file     - File commands");
+    printLine("  help system   - System commands");
+    printLine("  help network  - Network commands");
+    printLine("  help utils    - Utility commands");
+    printLine("  help time     - Time commands");
+    printLine("  help display  - Display commands");
+    printLine("  help os       - OS management");
 }
 
 void showHelpFile() {
     printLine("File Commands:");
     printLine("");
-    printLine("write <file> <text>   - Write text to file");
-    printLine("append <file> <text>  - Append text to file");
-    printLine("read <file>           - Read file contents");
-    printLine("delete <file>         - Delete file");
-    printLine("ls                    - List all files");
-    printLine("mv <old> <new>        - Rename file");
-    printLine("cp <src> <dst>        - Copy file");
+    printLine("  write <file> <text>   - Write text");
+    printLine("  append <file> <text>  - Append text");
+    printLine("  read <file>           - Read file");
+    printLine("  delete <file>         - Delete file");
+    printLine("  ls                    - List files");
+    printLine("  mv <old> <new>        - Rename file");
+    printLine("  cp <src> <dst>        - Copy file");
 }
 
 void showHelpSystem() {
     printLine("System Commands:");
     printLine("");
-    printLine("mem                   - Show memory info");
-    printLine("uptime                - Show system uptime");
-    printLine("reboot                - Restart device");
-    printLine("fetch                 - System information");
-    printLine("os                    - Show OS logo");
-    printLine("version               - Show OS version");
-    printLine("clear                 - Clear screen");
-    printLine("history               - Command history");
+    printLine("  mem           - Memory info");
+    printLine("  uptime        - System uptime");
+    printLine("  reboot        - Restart device");
+    printLine("  fetch         - System info");
+    printLine("  os            - Show OS logo");
+    printLine("  version       - Show version");
+    printLine("  clear         - Clear screen");
+    printLine("  history       - Command history");
 }
 
 void showHelpNetwork() {
     printLine("Network Commands:");
     printLine("");
-    printLine("wifi                  - Connect to WiFi");
-    printLine("scanwifi              - Scan WiFi networks");
-    printLine("curl <url>            - Fetch URL content");
-    printLine("ping <host>           - Ping host");
+    printLine("  wifi          - Connect WiFi");
+    printLine("  scanwifi      - Scan networks");
+    printLine("  curl <url>    - Fetch content");
+    printLine("  ping <host>   - Ping host");
 }
 
 void showHelpUtils() {
     printLine("Utility Commands:");
     printLine("");
-    printLine("calc <expression>     - Calculator");
-    printLine("  Operators: + - * / ^ %");
-    printLine("  Functions: sin() cos() tan()");
-    printLine("  sqrt() log() ln() exp() abs()");
-    printLine("  ceil() floor() round()");
-    printLine("  asin() acos() atan()");
-    printLine("  sinh() cosh() tanh()");
-    printLine("  Constants: pi e");
-    printLine("hex <number>          - Decimal to hex");
-    printLine("bin <number>          - Decimal to binary");
-    printLine("base64 encode <text>  - Encode to base64");
-    printLine("base64 decode <text>  - Decode from base64");
-    printLine("echo <text>           - Print text");
+    printLine("  calc <expr>        - Calculator");
+    printLine("  hex <number>       - Dec to hex");
+    printLine("  bin <number>       - Dec to binary");
+    printLine("  base64 encode <t>  - Encode");
+    printLine("  base64 decode <t>  - Decode");
+    printLine("  echo <text>        - Print text");
 }
 
 void showHelpTime() {
     printLine("Time Commands:");
     printLine("");
-    printLine("time                  - Show current time");
-    printLine("synctime              - Sync with NTP server");
-    printLine("calendar              - Show calendar");
-    printLine("timer <seconds>       - Countdown timer");
-    printLine("stopwatch             - Start stopwatch");
-    printLine("alarm <HH:MM> [msg]   - Set alarm");
-    printLine("  Example: alarm 14:30 Meeting");
+    printLine("  time           - Current time");
+    printLine("  synctime       - Sync with NTP");
+    printLine("  calendar       - Show calendar");
+    printLine("  timer <sec>    - Countdown");
+    printLine("  stopwatch      - Start timer");
+    printLine("  alarm <HH:MM>  - Set alarm");
 }
 
 void showHelpDisplay() {
     printLine("Display Commands:");
     printLine("");
-    printLine("themes                - List available themes");
-    printLine("theme <name|number>   - Select theme");
-    printLine("screensaver <1-7>     - Run screensaver");
-    printLine("  1: Diagonal Waves");
-    printLine("  2: Rainbow Wave");
-    printLine("  3: Color Grid");
-    printLine("  4: Plasma");
-    printLine("  5: Checkerboard");
-    printLine("  6: Fire");
-    printLine("  7: Starfield");
-    printLine("pug                   - Display pug image");
+    printLine("  themes          - List themes");
+    printLine("  theme <n>       - Select theme");
+    printLine("  screensaver <n> - Run saver");
+    printLine("  pug             - Show pug");
+}
+
+void showHelpOS() {
+    printLine("OS Management Commands:");
+    printLine("");
+    printLine("  ps/processes   - List processes");
+    printLine("  sysstat/stat   - System stats");
+    printLine("  kill <pid>     - Kill process");
 }
 
 
@@ -469,7 +462,7 @@ void showUptime() {
 
 void doReboot() {
     printLine("Rebooting...");
-    delay(100);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     ESP.restart();
 }
 
@@ -663,6 +656,9 @@ void runCommand(String cmd) {
     else if (cmd == "help display") {
         showHelpDisplay();
     }
+    else if (cmd == "help os") {
+        showHelpOS();
+    }
     else if (cmd == "pug") {
         displayPug();
     }
@@ -733,7 +729,35 @@ void runCommand(String cmd) {
         String text = cmd.substring(sp + 1);
         base64Command(operation, text);
     }
+    else if (cmd == "ps" || cmd == "processes") {
+        listProcesses();
+    }
+    else if (cmd == "sysstat" || cmd == "stat") {
+        showSystemStats();
+    }
+    else if (cmd.startsWith("kill ")) {
+        int pid = cmd.substring(5).toInt();
+        if (pid <= 0) {
+            printLine("Usage: kill <pid>");
+            return;
+        }
+        killProcess(pid);
+    }
     else {
         printLine("Unknown command.");
     }
+}
+
+
+
+void processCommand(String args) {
+    listProcesses();
+}
+
+void showSystemStats() {
+    printSystemStats();
+}
+
+void killProcessCmd(int pid) {
+    killProcess(pid);
 }
