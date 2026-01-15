@@ -666,13 +666,13 @@ void runCommand(String cmd) {
         if (cmd == "screensaver") {
             printLine("Usage: screensaver <mode>");
             printLine("Available modes:");
-            printLine("1: Diagonal Waves");
-            printLine("2: Rainbow Wave");
-            printLine("3: Color Grid");
-            printLine("4: Plasma");
-            printLine("5: Checkerboard");
-            printLine("6: Fire");
-            printLine("7: Starfield");
+            printLine("1");
+            printLine("2");
+            printLine("3");
+            printLine("4");
+            printLine("5");
+            printLine("6");
+            printLine("7");
             return;
         }
         
