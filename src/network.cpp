@@ -40,7 +40,7 @@ void connectWiFi() {
                     Serial.write(' ');
                     Serial.write('\b');
                 }
-            } else if (c >= 32 && c <= 126) {  // Printable characters only
+            } else if (c >= 32 && c <= 126) {  
                 WIFI_SSID += c;
                 Serial.write(c);
             }
@@ -49,7 +49,7 @@ void connectWiFi() {
     }
     WIFI_SSID.trim();
     
-    // Clear buffer again
+
     while (Serial.available() > 0) {
         Serial.read();
     }
@@ -72,16 +72,16 @@ void connectWiFi() {
                     Serial.write(' ');
                     Serial.write('\b');
                 }
-            } else if (c >= 32 && c <= 126) {  // Printable characters only
+            } else if (c >= 32 && c <= 126) {  
                 WIFI_PASS += c;
-                Serial.write('*');  // Show asterisks
+                Serial.write('*');  
             }
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
     WIFI_PASS.trim();
     
-    inputLocked = false;  // Unlock the shell
+    inputLocked = false;  
     
     if (WiFi.status() == WL_CONNECTED) {
         printLine("Already connected.");

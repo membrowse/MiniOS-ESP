@@ -363,7 +363,7 @@ void screensaver(int mode) {
         if (frameTime < frameDelay) {
             vTaskDelay((frameDelay - frameTime) / portTICK_PERIOD_MS);
         } else {
-            vTaskDelay(1 / portTICK_PERIOD_MS);  // Always yield at least 1ms
+            vTaskDelay(1 / portTICK_PERIOD_MS);  
         }
     }
     
