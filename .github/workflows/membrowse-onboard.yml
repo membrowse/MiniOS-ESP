@@ -22,7 +22,7 @@ jobs:
 
       - name: Build firmware with PlatformIO
         run: |
-          pio build
+          pio run
 
       - name: Historical analysis
         uses: membrowse/membrowse-action/onboard-action@v1
