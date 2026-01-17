@@ -1,5 +1,5 @@
 name: Onboard to MemBrowse
-on: workflow_dispatch  # Manual trigger
+on: workflow_dispatch
 
 jobs:
   onboard:
@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Full git history is required
+          fetch-depth: 0  # Required for historical analysis
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -28,8 +28,7 @@ jobs:
         uses: membrowse/membrowse-action/onboard-action@v1
         with:
           num_commits: 50
-          build_script: "pio build"
-          elf: .pio/build/my-target/firmware.elf
-          ld: linker.ld
-          target_name: my-target
+          build_script: "pio run"
+          elf: .pio/build/esp32dev/firmware.elf
+          target_name: esp32dev
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
