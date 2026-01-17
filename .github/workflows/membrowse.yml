@@ -6,7 +6,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -18,11 +19,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install platformio
 
-      - name: Build firmware (PlatformIO)
-        run: |
-          pio run
+      - name: Build firmware (ESP32)
+        run: pio run -e esp32dev
 
-      - name: Analyze memory
+      - name: MemBrowse Memory Analysis
         id: analyze
         uses: membrowse/membrowse-action@v1
         with:
@@ -30,7 +30,7 @@ jobs:
           target_name: esp32dev
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
 
-      - name: Post PR comment
+      - name: Post PR Comment
         if: github.event_name == 'pull_request'
         uses: membrowse/membrowse-action/comment-action@v1
         with:

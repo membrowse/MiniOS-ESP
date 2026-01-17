@@ -1,12 +1,13 @@
 name: Onboard to MemBrowse
-on: workflow_dispatch
+on: workflow_dispatch  # Manual trigger only
 
 jobs:
   onboard:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Required for historical analysis
 
@@ -20,15 +21,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install platformio
 
-      - name: Build firmware with PlatformIO
-        run: |
-          pio run
+      - name: Build firmware (ESP32)
+        run: pio run -e esp32dev
 
-      - name: Historical analysis
+      - name: MemBrowse Onboarding
         uses: membrowse/membrowse-action/onboard-action@v1
         with:
           num_commits: 50
-          build_script: "pio run"
+          build_script: "pio run -e esp32dev"
           elf: .pio/build/esp32dev/firmware.elf
           target_name: esp32dev
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
