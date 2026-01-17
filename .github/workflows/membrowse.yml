@@ -26,7 +26,7 @@ jobs:
         id: analyze
         uses: membrowse/membrowse-action@v1
         with:
-          elf: .pio/build/esp32dev/firmware.elf
+          elf: .pio/build/esp32dev/firmware.elf.ld
           target_name: esp32dev
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
 
