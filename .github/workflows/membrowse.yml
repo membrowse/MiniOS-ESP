@@ -26,9 +26,8 @@ jobs:
         id: analyze
         uses: membrowse/membrowse-action@v1
         with:
-          elf: .pio/build/stm32f4/firmware.elf
-          ld: src/linker.ld
-          target_name: stm32f4
+          elf: .pio/build/esp32dev/firmware.elf
+          target_name: esp32dev
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
 
       - name: Post PR comment
