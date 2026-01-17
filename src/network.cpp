@@ -17,13 +17,19 @@ extern bool inputLocked;
 void connectWiFi() {
     inputLocked = true;
     vTaskDelay(100 / portTICK_PERIOD_MS);  
-    
-    while (Serial.available() > 0) {
-        Serial.read();
+
+    if (WiFi.status() == WL_CONNECTED) {
+        printLine("Already connected!");
+        printLine("SSID: " + WiFi.SSID());
+        printLine("IP: " + WiFi.localIP().toString());
+        printLine("RSSI: " + String(WiFi.RSSI()) + " dBm");
+        inputLocked = false;
+        return;
     }
-    
+
+    while (Serial.available() > 0) Serial.read();
+
     printLine("Enter SSID: ");
-    
     WIFI_SSID = "";
     while (true) {
         if (Serial.available()) {
@@ -36,11 +42,9 @@ void connectWiFi() {
             } else if (c == '\b' || c == 127) {
                 if (WIFI_SSID.length() > 0) {
                     WIFI_SSID.remove(WIFI_SSID.length() - 1);
-                    Serial.write('\b');
-                    Serial.write(' ');
-                    Serial.write('\b');
+                    Serial.write('\b'); Serial.write(' '); Serial.write('\b');
                 }
-            } else if (c >= 32 && c <= 126) {  
+            } else if (c >= 32 && c <= 126) {
                 WIFI_SSID += c;
                 Serial.write(c);
             }
@@ -48,14 +52,10 @@ void connectWiFi() {
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
     WIFI_SSID.trim();
-    
 
-    while (Serial.available() > 0) {
-        Serial.read();
-    }
-    
+    while (Serial.available() > 0) Serial.read();
+
     printLine("Enter Password: ");
-    
     WIFI_PASS = "";
     while (true) {
         if (Serial.available()) {
@@ -68,46 +68,137 @@ void connectWiFi() {
             } else if (c == '\b' || c == 127) {
                 if (WIFI_PASS.length() > 0) {
                     WIFI_PASS.remove(WIFI_PASS.length() - 1);
-                    Serial.write('\b');
-                    Serial.write(' ');
-                    Serial.write('\b');
+                    Serial.write('\b'); Serial.write(' '); Serial.write('\b');
                 }
-            } else if (c >= 32 && c <= 126) {  
+            } else if (c >= 32 && c <= 126) {
                 WIFI_PASS += c;
-                Serial.write('*');  
+                Serial.write('*');
             }
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
     WIFI_PASS.trim();
-    
-    inputLocked = false;  
-    
-    if (WiFi.status() == WL_CONNECTED) {
-        printLine("Already connected.");
-        return;
-    }
-    
+
+    inputLocked = false;
+
     printLine("Connecting to: " + WIFI_SSID);
     WiFi.begin(WIFI_SSID.c_str(), WIFI_PASS.c_str());
-    
+
     int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    while (WiFi.status() != WL_CONNECTED && attempts < 10) {
         vTaskDelay(500 / portTICK_PERIOD_MS);
         Serial.print(".");
+        tft.print(".");
         attempts++;
     }
-    
+
     if (WiFi.status() == WL_CONNECTED) {
         printLine("");
         printLine("Connected!");
+        printLine("SSID: " + WiFi.SSID());
         printLine("IP: " + WiFi.localIP().toString());
+        printLine("RSSI: " + String(WiFi.RSSI()) + " dBm");
         syncTime();
     } else {
         printLine("");
         printLine("Failed to connect.");
     }
 }
+
+// void connectWiFi() {
+//     inputLocked = true;
+//     vTaskDelay(100 / portTICK_PERIOD_MS);  
+    
+//     while (Serial.available() > 0) {
+//         Serial.read();
+//     }
+    
+//     printLine("Enter SSID: ");
+    
+//     WIFI_SSID = "";
+//     while (true) {
+//         if (Serial.available()) {
+//             char c = Serial.read();
+//             if (c == '\n' || c == '\r') {
+//                 if (WIFI_SSID.length() > 0) {
+//                     Serial.println();
+//                     break;
+//                 }
+//             } else if (c == '\b' || c == 127) {
+//                 if (WIFI_SSID.length() > 0) {
+//                     WIFI_SSID.remove(WIFI_SSID.length() - 1);
+//                     Serial.write('\b');
+//                     Serial.write(' ');
+//                     Serial.write('\b');
+//                 }
+//             } else if (c >= 32 && c <= 126) {  
+//                 WIFI_SSID += c;
+//                 Serial.write(c);
+//             }
+//         }
+//         vTaskDelay(10 / portTICK_PERIOD_MS);
+//     }
+//     WIFI_SSID.trim();
+    
+
+//     while (Serial.available() > 0) {
+//         Serial.read();
+//     }
+    
+//     printLine("Enter Password: ");
+    
+//     WIFI_PASS = "";
+//     while (true) {
+//         if (Serial.available()) {
+//             char c = Serial.read();
+//             if (c == '\n' || c == '\r') {
+//                 if (WIFI_PASS.length() > 0) {
+//                     Serial.println();
+//                     break;
+//                 }
+//             } else if (c == '\b' || c == 127) {
+//                 if (WIFI_PASS.length() > 0) {
+//                     WIFI_PASS.remove(WIFI_PASS.length() - 1);
+//                     Serial.write('\b');
+//                     Serial.write(' ');
+//                     Serial.write('\b');
+//                 }
+//             } else if (c >= 32 && c <= 126) {  
+//                 WIFI_PASS += c;
+//                 Serial.write('*');  
+//             }
+//         }
+//         vTaskDelay(10 / portTICK_PERIOD_MS);
+//     }
+//     WIFI_PASS.trim();
+    
+//     inputLocked = false;  
+    
+//     if (WiFi.status() == WL_CONNECTED) {
+//         printLine("Already connected.");
+//         return;
+//     }
+    
+//     printLine("Connecting to: " + WIFI_SSID);
+//     WiFi.begin(WIFI_SSID.c_str(), WIFI_PASS.c_str());
+    
+//     int attempts = 0;
+//     while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+//         vTaskDelay(500 / portTICK_PERIOD_MS);
+//         Serial.print(".");
+//         attempts++;
+//     }
+    
+//     if (WiFi.status() == WL_CONNECTED) {
+//         printLine("");
+//         printLine("Connected!");
+//         printLine("IP: " + WiFi.localIP().toString());
+//         syncTime();
+//     } else {
+//         printLine("");
+//         printLine("Failed to connect.");
+//     }
+// }
 
 void curlURL(String url) {
     if (WiFi.status() != WL_CONNECTED) {

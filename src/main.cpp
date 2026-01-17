@@ -94,7 +94,7 @@ void setup() {
     kernelInit();
     
     createProcess(initProcess, "init", 4096, 1);
-    createProcess(serialInputProcess, "shell", 8192, 2);
+    createProcess(serialInputProcess, "shell", 16384, 2);
     createProcess(alarmCheckProcess, "alarm", 1024, 1);
     createProcess(watchdogProcess, "watchdog", 1024, 0);
     

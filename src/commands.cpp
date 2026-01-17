@@ -7,6 +7,7 @@
 #include "pug.h"
 #include "timeutils.h"
 #include "kernel.h"
+#include "grapher.h"
 #include <esp_system.h>
 #include <WiFi.h>
 #include <math.h>
@@ -164,7 +165,6 @@ void showHelp() {
 
 void showHelpFile() {
     printLine("File Commands:");
-    printLine("");
     printLine("  write <file> <text>   - Write text");
     printLine("  append <file> <text>  - Append text");
     printLine("  read <file>           - Read file");
@@ -176,62 +176,57 @@ void showHelpFile() {
 
 void showHelpSystem() {
     printLine("System Commands:");
-    printLine("");
-    printLine("  mem           - Memory info");
-    printLine("  uptime        - System uptime");
-    printLine("  reboot        - Restart device");
-    printLine("  fetch         - System info");
-    printLine("  os            - Show OS logo");
-    printLine("  version       - Show version");
-    printLine("  clear         - Clear screen");
-    printLine("  history       - Command history");
+    printLine("  mem       - Memory info");
+    printLine("  uptime    - System uptime");
+    printLine("  reboot    - Restart device");
+    printLine("  fetch     - System info");
+    printLine("  os        - OS logo");
+    printLine("  version   - OS version");
+    printLine("  clear     - Clear display");
+    printLine("  history   - Command history");
 }
 
 void showHelpNetwork() {
     printLine("Network Commands:");
-    printLine("");
-    printLine("  wifi          - Connect WiFi");
-    printLine("  scanwifi      - Scan networks");
-    printLine("  curl <url>    - Fetch content");
-    printLine("  ping <host>   - Ping host");
+    printLine("  wifi       - Connect WiFi");
+    printLine("  scanwifi   - Scan networks");
+    printLine("  curl <url> - Fetch content");
+    printLine("  ping <host>- Ping host");
 }
 
 void showHelpUtils() {
     printLine("Utility Commands:");
-    printLine("");
-    printLine("  calc <expr>        - Calculator");
-    printLine("  hex <number>       - Dec to hex");
-    printLine("  bin <number>       - Dec to binary");
-    printLine("  base64 encode <t>  - Encode");
-    printLine("  base64 decode <t>  - Decode");
-    printLine("  echo <text>        - Print text");
+    printLine("  calc <expr>                 - Calculator");
+    printLine("  hex <number>                - Dec to hex");
+    printLine("  bin <number>                - Dec to bin");
+    printLine("  base64 encode <text>        - Encode Base64");
+    printLine("  base64 decode <text>        - Decode Base64");
+    printLine("  graph <expression> <colour> - Graph function");
+    printLine("  echo <text>                 - Print text");
 }
 
 void showHelpTime() {
     printLine("Time Commands:");
-    printLine("");
-    printLine("  time           - Current time");
-    printLine("  synctime       - Sync with NTP");
-    printLine("  calendar       - Show calendar");
-    printLine("  timer <sec>    - Countdown");
-    printLine("  stopwatch      - Start timer");
-    printLine("  alarm <HH:MM>  - Set alarm");
+    printLine("  time            - Current time");
+    printLine("  synctime        - Sync with NTP");
+    printLine("  calendar        - Show calendar");
+    printLine("  timer <sec>     - Countdown timer");
+    printLine("  stopwatch       - Elapsed timer");
+    printLine("  alarm <HH:MM>   - Set alarm");
 }
 
 void showHelpDisplay() {
     printLine("Display Commands:");
-    printLine("");
     printLine("  themes          - List themes");
     printLine("  theme <n>       - Select theme");
-    printLine("  screensaver <n> - Run saver");
-    printLine("  pug             - Show pug");
+    printLine("  screensaver <n> - Run screensaver");
+    printLine("  pug             - Show pug image");
 }
 
 void showHelpOS() {
-    printLine("OS Management Commands:");
-    printLine("");
-    printLine("  ps/processes   - List processes");
-    printLine("  sysstat/stat   - System stats");
+    printLine("OS Commands:");
+    printLine("  ps / processes - List processes");
+    printLine("  sysstat / stat - System stats");
     printLine("  kill <pid>     - Kill process");
 }
 
@@ -508,30 +503,23 @@ void fetch() {
     printLine("");
     
     int startX = 5;
-    int startY = tft.getCursorY() + 5;
+    int startY = tft.getCursorY() + 5; 
     int blockWidth = 15;
     int blockHeight = 10;
-    tft.fillRect(startX + blockWidth * 0, startY, blockWidth, blockHeight, 0x0000);
-    tft.fillRect(startX + blockWidth * 1, startY, blockWidth, blockHeight, 0x7800);
-    tft.fillRect(startX + blockWidth * 2, startY, blockWidth, blockHeight, 0x03E0);
-    tft.fillRect(startX + blockWidth * 3, startY, blockWidth, blockHeight, 0x7BE0);
-    tft.fillRect(startX + blockWidth * 4, startY, blockWidth, blockHeight, 0x0010);
-    tft.fillRect(startX + blockWidth * 5, startY, blockWidth, blockHeight, 0x780F);
-    tft.fillRect(startX + blockWidth * 6, startY, blockWidth, blockHeight, 0x03EF);
-    tft.fillRect(startX + blockWidth * 7, startY, blockWidth, blockHeight, 0xC618);
 
+    uint16_t colors1[8] = {0x0000,0x7800,0x03E0,0x7BE0,0x0010,0x780F,0x03EF,0xC618};
+    for (int i=0;i<8;i++) tft.fillRect(startX + i*blockWidth, startY, blockWidth, blockHeight, colors1[i]);
+
+    
     startY += blockHeight;
+    uint16_t colors2[8] = {0x4208,0xF800,0x07E0,0xFFE0,0x001F,0xF81F,0x07FF,0xFFFF};
+    for (int i=0;i<8;i++) tft.fillRect(startX + i*blockWidth, startY, blockWidth, blockHeight, colors2[i]);
 
-    tft.fillRect(startX + blockWidth * 0, startY, blockWidth, blockHeight, 0x4208);
-    tft.fillRect(startX + blockWidth * 1, startY, blockWidth, blockHeight, 0xF800);
-    tft.fillRect(startX + blockWidth * 2, startY, blockWidth, blockHeight, 0x07E0);
-    tft.fillRect(startX + blockWidth * 3, startY, blockWidth, blockHeight, 0xFFE0);
-    tft.fillRect(startX + blockWidth * 4, startY, blockWidth, blockHeight, 0x001F);
-    tft.fillRect(startX + blockWidth * 5, startY, blockWidth, blockHeight, 0xF81F);
-    tft.fillRect(startX + blockWidth * 6, startY, blockWidth, blockHeight, 0x07FF);
-    tft.fillRect(startX + blockWidth * 7, startY, blockWidth, blockHeight, 0xFFFF);
+    
+    startY += blockHeight;
+    tft.setCursor(startX, startY + 5);
+    currentCursorY = startY; 
 
-    tft.setCursor(5, startY + blockHeight + 5);
 
     }
 
@@ -728,6 +716,17 @@ void runCommand(String cmd) {
         String operation = cmd.substring(7, sp);
         String text = cmd.substring(sp + 1);
         base64Command(operation, text);
+    }
+    else if (cmd.startsWith("graph ")) {
+        int sp = cmd.indexOf(' ', 6);
+        String expr, color = "blue";
+        if (sp == -1) {
+            expr = cmd.substring(6);
+        } else {
+            expr = cmd.substring(6, sp);
+            color = cmd.substring(sp + 1);
+        }
+        funcToGraph(expr, color);
     }
     else if (cmd == "ps" || cmd == "processes") {
         listProcesses();

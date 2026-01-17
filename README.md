@@ -27,7 +27,7 @@ MiniOS-ESP is a lightweight, Unix-like command-line operating system designed fo
 - **Multi-process architecture** with scheduler
 
 ### Version
-Current Version: **MiniOS-ESP v2.0.0**
+Current Version: **MiniOS-ESP v2.0.1**
 
 ---
 
@@ -73,7 +73,7 @@ MiniOS runs five core processes:
 | Process | Priority | Stack | Description |
 |---------|----------|-------|-------------|
 | `init` | 1 | 4096 | System initialization |
-| `shell` | 2 | 8192 | Command interpreter |
+| `shell` | 2 | 16384 | Command interpreter |
 | `alarm` | 1 | 1024 | Time-based alarms |
 | `watchdog` | 0 | 1024 | System monitoring |
 | `scheduler` | 3 | 2048 | Process state management |
@@ -742,6 +742,57 @@ Decode Base64 text.
 Decoded: Hello World
 ```
 
+#### `graph <expression> <colour>`
+
+Graph a mathematical function of `x`.
+
+**Rules:**
+
+* One variable: `x`
+* No spaces in expression
+* No `=` sign
+* Range: `x,y ∈ [-10,10]`
+* Colour is optional (defaults to blue)
+
+**Supported Functions:**
+
+| Category       | Functions                       |
+| -------------- | ------------------------------- |
+| Trigonometric  | sin, cos, tan, asin, acos, atan |
+| Hyperbolic     | sinh, cosh, tanh                |
+| Logarithmic    | log (base 10), ln (natural)     |
+| Exponential    | exp, sqrt                       |
+| Rounding/Other | abs, ceil, floor, round         |
+
+**Supported Colours:**
+
+| Colour  |
+| ------- |
+| red     |
+| green   |
+| blue    |
+| black   |
+| yellow  |
+| cyan    |
+| magenta |
+| orange  |
+| purple  |
+
+**Example:**
+
+```
+> graph sin(x) red
+```
+
+**Complex Example:**
+
+```
+> graph e^(sin(x)+sin(2*x))/(1+x^2) cyan
+```
+
+**Exit:** Press `ENTER` to return.
+
+
 #### `echo <text>`
 Print text to display.
 
@@ -1379,6 +1430,13 @@ Contributions are welcome. Please:
 
 ## Changelog
 
+### v2.0.1
+
+* Added `graph` function
+* Shell process size increased to 16 KB to prevent stack overflow
+* `wifi` command fixed
+* `fetch` command bug with color block display fixed and cursor handling corrected
+
 ### v2.0.0
 
 * Added FreeRTOS kernel
@@ -1421,6 +1479,6 @@ Contributions are welcome. Please:
 
 **Author:** Vuqar Ahadli
 **Repository:** [https://github.com/VuqarAhadli/MiniOS-ESP](https://github.com/VuqarAhadli/MiniOS-ESP)
-**Documentation Version:** 2.0.0
+**Documentation Version:** 2.0.1
 **Last Updated:** January 2026
 

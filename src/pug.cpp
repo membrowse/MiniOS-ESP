@@ -277,7 +277,7 @@ void displayPug() {
                 applyTheme();
                 break;}
         }
-        delay(10);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 
     screenLocked = false;      
