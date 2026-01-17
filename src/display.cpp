@@ -34,7 +34,7 @@ void clearScreen() {
     tft.setCursor(5, 0);
     currentCursorY = 0;
     tft.setTextColor(current.fg, current.bg);
-    tft.print("> ");
+    
 }
 
 void printLine(String s) {
@@ -370,6 +370,7 @@ void screensaver(int mode) {
     applyTheme();
     screenLocked = false;
     clearScreen();
+    tft.print("> ");
 }
 
 void showLogo() {

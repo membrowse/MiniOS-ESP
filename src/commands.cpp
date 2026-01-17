@@ -168,30 +168,34 @@ void showHelpFile() {
     printLine("  write <file> <text>   - Write text");
     printLine("  append <file> <text>  - Append text");
     printLine("  read <file>           - Read file");
-    printLine("  delete <file>         - Delete file");
-    printLine("  ls                    - List files");
-    printLine("  mv <old> <new>        - Rename file");
-    printLine("  cp <src> <dst>        - Copy file");
+    printLine("  delete <file>         - Delete file (alias: rm)");
+    printLine("  ls                    - List files (alias: dir)");
+    printLine("  mv <old> <new>        - Rename file (alias: rename)");
+    printLine("  cp <src> <dst>        - Copy file (alias: copy)");
 }
 
 void showHelpSystem() {
     printLine("System Commands:");
-    printLine("  mem       - Memory info");
+    printLine("  mem       - Memory info (alias: free)");
     printLine("  uptime    - System uptime");
-    printLine("  reboot    - Restart device");
-    printLine("  fetch     - System info");
-    printLine("  os        - OS logo");
-    printLine("  version   - OS version");
-    printLine("  clear     - Clear display");
-    printLine("  history   - Command history");
+    printLine("  reboot    - Restart device (alias: restart)");
+    printLine("  fetch     - System info (alias: neofetch)");
+    printLine("  os        - OS logo (alias: logo)");
+    printLine("  version   - OS version (alias: ver)");
+    printLine("  clear     - Clear display (alias: cls)");
+    printLine("  history   - Command history (alias: hist)");
 }
 
 void showHelpNetwork() {
     printLine("Network Commands:");
-    printLine("  wifi       - Connect WiFi");
-    printLine("  scanwifi   - Scan networks");
-    printLine("  curl <url> - Fetch content");
-    printLine("  ping <host>- Ping host");
+    printLine("  wifi              - Connect to WiFi");
+    printLine("  disconnect        - Disconnect WiFi");
+    printLine("  scanwifi          - Scan networks");
+    printLine("  ifconfig          - Network info");
+    printLine("  ping <host>       - Ping host");
+    printLine("  nslookup <host>   - DNS lookup");
+    printLine("  curl <url>        - Fetch URL");
+    printLine("  curl -v <url>     - Verbose mode");
 }
 
 void showHelpUtils() {
@@ -215,14 +219,6 @@ void showHelpTime() {
     printLine("  alarm <HH:MM>   - Set alarm");
 }
 
-void showHelpDisplay() {
-    printLine("Display Commands:");
-    printLine("  themes          - List themes");
-    printLine("  theme <n>       - Select theme");
-    printLine("  screensaver <n> - Run screensaver");
-    printLine("  pug             - Show pug image");
-}
-
 void showHelpOS() {
     printLine("OS Commands:");
     printLine("  ps / processes - List processes");
@@ -230,6 +226,13 @@ void showHelpOS() {
     printLine("  kill <pid>     - Kill process");
 }
 
+void showHelpDisplay() {
+    printLine("Display Commands:");
+    printLine("  themes          - List themes");
+    printLine("  theme <n>       - Select theme");
+    printLine("  screensaver <n> - Run screensaver");
+    printLine("  pug             - Show pug image");
+}
 
 
 int precedence(char op) {
@@ -528,224 +531,348 @@ void echoCommand(String text) {
 }
 
 
+struct CommandArgs {
+    String cmd;
+    String arg1;
+    String arg2;
+    String rest;
+};
+
+CommandArgs parseCommand(String input) {
+    CommandArgs args;
+    input.trim();
+    
+    int firstSpace = input.indexOf(' ');
+    if (firstSpace == -1) {
+        args.cmd = input;
+        return args;
+    }
+    
+    args.cmd = input.substring(0, firstSpace);
+    String remainder = input.substring(firstSpace + 1);
+    remainder.trim();
+    
+    int secondSpace = remainder.indexOf(' ');
+    if (secondSpace == -1) {
+        args.arg1 = remainder;
+        return args;
+    }
+    
+    args.arg1 = remainder.substring(0, secondSpace);
+    args.rest = remainder.substring(secondSpace + 1);
+    args.rest.trim();
+    
+    int thirdSpace = args.rest.indexOf(' ');
+    if (thirdSpace != -1) {
+        args.arg2 = args.rest.substring(0, thirdSpace);
+        args.rest = args.rest.substring(thirdSpace + 1);
+        args.rest.trim();
+    } else if (args.rest.length() > 0) {
+        args.arg2 = args.rest;
+        args.rest = "";
+    }
+    
+    return args;
+}
+
 void runCommand(String cmd) {
     cmd.trim();
+    
+    if (cmd.length() == 0){
+        if(currentCursorY>=MAX_Y){
+            clearScreen();
+            tft.print("> ");
+        }
+        return;
+    }
+    
     addToHistory(cmd);
     
-    if (cmd.startsWith("write ")) {
-        int sp = cmd.indexOf(' ', 6);
-        if (sp == -1) {
-            printLine("Usage: write filename text");
+    CommandArgs args = parseCommand(cmd);
+    String baseCmd = args.cmd;
+    baseCmd.toLowerCase();
+    
+    if (baseCmd == "write") {
+        if (args.arg1.length() == 0 || args.rest.length() == 0) {
+            printLine("Usage: write <filename> <text>");
             return;
         }
-        String name = cmd.substring(6, sp);
-        String data = cmd.substring(sp + 1);
-        writeFile(name, data);
+        writeFile(args.arg1, args.rest);
     }
-    else if (cmd.startsWith("append ")) {
-        int sp = cmd.indexOf(' ', 7);
-        if (sp == -1) {
-            printLine("Usage: append filename text");
+    else if (baseCmd == "append") {
+        if (args.arg1.length() == 0 || args.rest.length() == 0) {
+            printLine("Usage: append <filename> <text>");
             return;
         }
-        String name = cmd.substring(7, sp);
-        String data = cmd.substring(sp + 1);
-        appendFile(name, data);
+        appendFile(args.arg1, args.rest);
     }
-    else if (cmd == "ls") {
+    else if (baseCmd == "read") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: read <filename>");
+            return;
+        }
+        readFile(args.arg1);
+    }
+    else if (baseCmd == "delete" || baseCmd == "rm") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: delete <filename>");
+            return;
+        }
+        deleteFile(args.arg1);
+    }
+    else if (baseCmd == "ls" || baseCmd == "dir") {
         listFiles();
     }
-    else if (cmd.startsWith("mv ")) {
-        int sp = cmd.indexOf(' ', 3);
-        if (sp == -1) { printLine("Usage: mv oldname newname"); return; }
-        String a = cmd.substring(3, sp);
-        String b = cmd.substring(sp + 1);
-        renameFile(a, b);
+    else if (baseCmd == "mv" || baseCmd == "rename") {
+        if (args.arg1.length() == 0 || args.arg2.length() == 0) {
+            printLine("Usage: mv <old> <new>");
+            return;
+        }
+        renameFile(args.arg1, args.arg2);
     }
-    else if (cmd.startsWith("cp ")) {
-        int sp = cmd.indexOf(' ', 3);
-        if (sp == -1) { printLine("Usage: cp src dst"); return; }
-        String a = cmd.substring(3, sp);
-        String b = cmd.substring(sp + 1);
-        copyFile(a, b);
+    else if (baseCmd == "cp" || baseCmd == "copy") {
+        if (args.arg1.length() == 0 || args.arg2.length() == 0) {
+            printLine("Usage: cp <src> <dst>");
+            return;
+        }
+        copyFile(args.arg1, args.arg2);
     }
-    else if (cmd.startsWith("read ")) {
-        readFile(cmd.substring(5));
+    else if (baseCmd == "wifi") {
+        if (args.arg1 == "disconnect") {
+            disconnectWiFi();
+        } else {
+            connectWiFi();
+        }
     }
-    else if (cmd.startsWith("delete ")) {
-        deleteFile(cmd.substring(7));
+    else if (baseCmd == "disconnect") {
+        disconnectWiFi();
     }
-    else if (cmd.startsWith("echo ")) {
-        echoCommand(cmd.substring(5));
-    }
-    else if (cmd == "version") {
-        showVersion();
-    }
-    else if (cmd == "time") {
-        printLine(getTime());
-    }
-    else if (cmd == "synctime") {
-        syncTime();
-    }
-    else if (cmd == "wifi") {
-        connectWiFi();
-    }
-    else if (cmd == "scanwifi") {
+    else if (baseCmd == "scanwifi" || baseCmd == "wifiscan") {
         scanWiFi();
     }
-    else if (cmd.startsWith("curl ")) {
-        curlURL(cmd.substring(5));
+    else if (baseCmd == "ifconfig" || baseCmd == "netinfo" || baseCmd == "ipconfig") {
+        showNetworkInfo();
     }
-    else if (cmd.startsWith("ping ")) {
-        pingHost(cmd.substring(5));
-    }
-    else if (cmd == "os") {
-        showLogo();
-    }
-    else if (cmd == "mem") {
-        showMem();
-    }
-    else if (cmd == "uptime") {
-        showUptime();
-    }
-    else if (cmd == "reboot") {
-        doReboot();
-    }
-    else if (cmd.startsWith("calc ")) {
-        calc(cmd.substring(5));
-    }
-    else if (cmd == "themes") {
-        listThemes();
-    }
-    else if (cmd == "clear" || cmd == "cls") {
-        clearScreen();
-    }
-    else if (cmd.startsWith("theme ")) {
-        setTheme(cmd.substring(6));
-    }
-    else if (cmd == "help") {
-        showHelp();
-    }
-    else if (cmd == "help file") {
-        showHelpFile();
-    }
-    else if (cmd == "help system") {
-        showHelpSystem();
-    }
-    else if (cmd == "help network") {
-        showHelpNetwork();
-    }
-    else if (cmd == "help utils") {
-        showHelpUtils();
-    }
-    else if (cmd == "help time") {
-        showHelpTime();
-    }
-    else if (cmd == "help display") {
-        showHelpDisplay();
-    }
-    else if (cmd == "help os") {
-        showHelpOS();
-    }
-    else if (cmd == "pug") {
-        displayPug();
-    }
-    else if (cmd == "screensaver" || cmd.startsWith("screensaver ")) {
-        if (cmd == "screensaver") {
-            printLine("Usage: screensaver <mode>");
-            printLine("Available modes:");
-            printLine("1");
-            printLine("2");
-            printLine("3");
-            printLine("4");
-            printLine("5");
-            printLine("6");
-            printLine("7");
+    else if (baseCmd == "curl") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: curl [-v] <url>");
             return;
         }
         
-        int mode = cmd.substring(12).toInt();
+        if (args.arg1 == "-v") {
+            if (args.rest.length() == 0) {
+                printLine("Usage: curl -v <url>");
+                return;
+            }
+            curlURLVerbose(args.rest);
+        } else {
+            curlURL(args.arg1 + (args.rest.length() > 0 ? " " + args.rest : ""));
+        }
+    }
+    else if (baseCmd == "ping") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: ping <host>");
+            return;
+        }
+        pingHost(args.arg1);
+    }
+    else if (baseCmd == "nslookup" || baseCmd == "dns") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: nslookup <host>");
+            return;
+        }
+        dnsLookup(args.arg1);
+    }
+    else if (baseCmd == "mem" || baseCmd == "memory") {
+        showMem();
+    }
+    else if (baseCmd == "uptime") {
+        showUptime();
+    }
+    else if (baseCmd == "reboot" || baseCmd == "restart") {
+        doReboot();
+    }
+    else if (baseCmd == "fetch" || baseCmd == "neofetch" || baseCmd == "fastfetch" ) {
+        fetch();
+    }
+    else if (baseCmd == "os" || baseCmd == "logo") {
+        showLogo();
+    }
+    else if (baseCmd == "version" || baseCmd == "ver") {
+        showVersion();
+    }
+    else if (baseCmd == "clear" || baseCmd == "cls") {
+        clearScreen();
+        tft.print("> ");
+    }
+    else if (baseCmd == "history" || baseCmd == "hist") {
+        showHistory();
+    }
+    else if (baseCmd == "ps" || baseCmd == "processes" || baseCmd == "top") {
+        listProcesses();
+    }
+    else if (baseCmd == "sysstat" || baseCmd == "stat") {
+        showSystemStats();
+    }
+    else if (baseCmd == "kill") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: kill <pid>");
+            return;
+        }
+        int pid = args.arg1.toInt();
+        if (pid <= 0) {
+            printLine("Invalid PID");
+            return;
+        }
+        killProcess(pid);
+    }
+    else if (baseCmd == "echo") {
+        echoCommand(args.arg1 + (args.rest.length() > 0 ? " " + args.rest : ""));
+    }
+    else if (baseCmd == "calc") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: calc <expression>");
+            return;
+        }
+        calc(args.arg1 + (args.rest.length() > 0 ? " " + args.rest : ""));
+    }
+    else if (baseCmd == "hex") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: hex <number>");
+            return;
+        }
+        hexCommand(args.arg1);
+    }
+    else if (baseCmd == "bin") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: bin <number>");
+            return;
+        }
+        binCommand(args.arg1);
+    }
+    else if (baseCmd == "base64") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: base64 encode <text>");
+            printLine("       base64 decode <text>");
+            return;
+        }
+        
+        String operation = args.arg1;
+        String text = args.arg2;
+        if (args.rest.length() > 0) {
+            text = args.arg2 + " " + args.rest;
+        }
+        
+        if (text.length() == 0) {
+            printLine("Usage: base64 encode <text>");
+            printLine("       base64 decode <text>");
+            return;
+        }
+        
+        base64Command(operation, text);
+    }   
+    else if (baseCmd == "time" || baseCmd == "date") {
+        printLine(getTime());
+    }
+    else if (baseCmd == "synctime" || baseCmd == "ntpupdate") {
+        syncTime();
+    }
+    else if (baseCmd == "calendar" || baseCmd == "cal") {
+        showCalendar();
+    }
+    else if (baseCmd == "timer") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: timer <seconds>");
+            return;
+        }
+        int seconds = args.arg1.toInt();
+        if (seconds <= 0) {
+            printLine("Invalid time");
+            return;
+        }
+        timerCommand(seconds);
+    }
+    else if (baseCmd == "stopwatch" || baseCmd == "sw") {
+        stopwatchCommand();
+    }
+    else if (baseCmd == "alarm") {
+        if (args.arg1.length() == 0) {
+            if (systemAlarm.active) {
+                printLine("Alarm set for " + String(systemAlarm.hour) + ":" + 
+                         (systemAlarm.minute < 10 ? "0" : "") + String(systemAlarm.minute));
+            } else {
+                printLine("No alarm set.");
+            }
+        } else {
+            setAlarm(args.arg1);
+        }
+    }
+    else if (baseCmd == "themes") {
+        listThemes();
+    }
+    else if (baseCmd == "theme") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: theme <number>");
+            listThemes();
+            return;
+        }
+        setTheme(args.arg1);
+    }
+    else if (baseCmd == "pug") {
+        displayPug();
+    }
+    else if (baseCmd == "screensaver" || baseCmd == "ss") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: screensaver <mode>");
+            printLine("Available modes: 1-7");
+            return;
+        }
+        
+        int mode = args.arg1.toInt();
         if (mode < 1 || mode > 7) {
             printLine("Invalid mode. Use 1-7.");
-            printLine("Type 'screensaver' for help.");
             return;
         }
         
         screensaver(mode);
     }
-    else if (cmd == "fetch") {
-        fetch();
-    }
-    else if (cmd == "history") {
-        showHistory();
-    }
-    else if (cmd == "calendar" || cmd == "cal") {
-        showCalendar();
-    }
-    else if (cmd.startsWith("timer ")) {
-        int seconds = cmd.substring(6).toInt();
-        timerCommand(seconds);
-    }
-    else if (cmd == "stopwatch" || cmd == "sw") {
-        stopwatchCommand();
-    }
-    else if (cmd.startsWith("alarm ")) {
-        setAlarm(cmd.substring(6));
-    }
-    else if (cmd == "alarm") {
-        if (systemAlarm.active) {
-            printLine("Alarm set for " + String(systemAlarm.hour) + ":" + 
-                     (systemAlarm.minute < 10 ? "0" : "") + String(systemAlarm.minute));
-        } else {
-            printLine("No alarm set.");
-        }
-    }
-    else if (cmd.startsWith("hex ")) {
-        hexCommand(cmd.substring(4));
-    }
-    else if (cmd.startsWith("bin ")) {
-        binCommand(cmd.substring(4));
-    }
-    else if (cmd.startsWith("base64 ")) {
-        int sp = cmd.indexOf(' ', 7);
-        if (sp == -1) {
-            printLine("Usage: base64 encode <text>");
-            printLine("       base64 decode <text>");
+    else if (baseCmd == "graph" || baseCmd == "plot") {
+        if (args.arg1.length() == 0) {
+            printLine("Usage: graph <expression> [color]");
+            printLine("Example: graph sin(x) red");
             return;
         }
-        String operation = cmd.substring(7, sp);
-        String text = cmd.substring(sp + 1);
-        base64Command(operation, text);
+        String color = args.arg2.length() > 0 ? args.arg2 : "blue";
+        funcToGraph(args.arg1, color);
     }
-    else if (cmd.startsWith("graph ")) {
-        int sp = cmd.indexOf(' ', 6);
-        String expr, color = "blue";
-        if (sp == -1) {
-            expr = cmd.substring(6);
+    else if (baseCmd == "help" || baseCmd == "h") {
+        if (args.arg1.length() == 0) {
+            showHelp();
+        } else if (args.arg1 == "file") {
+            showHelpFile();
+        } else if (args.arg1 == "system") {
+            showHelpSystem();
+        } else if (args.arg1 == "network") {
+            showHelpNetwork();
+        } else if (args.arg1 == "utils") {
+            showHelpUtils();
+        } else if (args.arg1 == "time") {
+            showHelpTime();
+        } else if (args.arg1 == "display") {
+            showHelpDisplay();
+        } else if (args.arg1 == "os") {
+            showHelpOS();
         } else {
-            expr = cmd.substring(6, sp);
-            color = cmd.substring(sp + 1);
+            printLine("Unknown help topic: " + args.arg1);
+            showHelp();
         }
-        funcToGraph(expr, color);
-    }
-    else if (cmd == "ps" || cmd == "processes") {
-        listProcesses();
-    }
-    else if (cmd == "sysstat" || cmd == "stat") {
-        showSystemStats();
-    }
-    else if (cmd.startsWith("kill ")) {
-        int pid = cmd.substring(5).toInt();
-        if (pid <= 0) {
-            printLine("Usage: kill <pid>");
-            return;
-        }
-        killProcess(pid);
     }
     else {
-        printLine("Unknown command.");
+        printLine("Unknown command: " + baseCmd);
+        printLine("Type 'help' for available commands");
     }
 }
+
 
 
 

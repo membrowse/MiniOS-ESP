@@ -258,6 +258,7 @@ void funcToGraph(String expression, String lineColour) {
                 screenLocked = false;
                 applyTheme();
                 clearScreen();
+                tft.print("> ");
                 break;
             }
         }

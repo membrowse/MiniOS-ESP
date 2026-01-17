@@ -97,7 +97,6 @@ void setup() {
     createProcess(serialInputProcess, "shell", 16384, 2);
     createProcess(alarmCheckProcess, "alarm", 1024, 1);
     createProcess(watchdogProcess, "watchdog", 1024, 0);
-    
     createProcess(kernelScheduler, "scheduler", 2048, KERNEL_PRIORITY);
 }
 
