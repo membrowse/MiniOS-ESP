@@ -32,4 +32,4 @@ jobs:
           elf: .pio/build/esp32dev/firmware.elf
           target_name: esp32dev
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
-          args: --identical
+          identical: true

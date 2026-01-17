@@ -30,7 +30,7 @@ jobs:
           # ld: .pio/build/esp32dev/ld/esp32.ld
           target_name: esp32dev
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
-          args: --identical
+          identical: true
 
       - name: Post PR Comment
         if: github.event_name == 'pull_request'
