@@ -1,0 +1,20 @@
+name: Onboard to MemBrowse
+on: workflow_dispatch  # Manual trigger
+
+jobs:
+  onboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Get full git history
+
+      - name: Historical analysis
+        uses: membrowse/membrowse-action/onboard-action@v1
+        with:
+          num_commits: 50
+          build_script: "make clean && make"
+          elf: build/firmware.elf
+          ld: "linker.ld"
+          target_name: my-target
+          api_key: ${{ secrets.MEMBROWSE_API_KEY }}
