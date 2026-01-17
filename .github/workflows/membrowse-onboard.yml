@@ -30,6 +30,6 @@ jobs:
           num_commits: 50
           build_script: "pio run -e esp32dev"
           elf: .pio/build/esp32dev/firmware.elf
-          ld: .pio/build/esp32dev/ld/esp32.ld
+          # ld: .pio/build/esp32dev/ld/esp32.ld
           target_name: esp32dev
           api_key: ${{ secrets.MEMBROWSE_API_KEY }}
