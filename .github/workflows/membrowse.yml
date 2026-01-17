@@ -1,0 +1,26 @@
+name: Memory Analysis
+on: [push, pull_request]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build firmware
+        run: make all
+
+      - name: Analyze memory
+        id: analyze
+        uses: membrowse/membrowse-action@v1
+        with:
+          elf: build/firmware.elf
+          ld: "src/linker.ld"
+          target_name: stm32f4
+          api_key: ${{ secrets.MEMBROWSE_API_KEY }}
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: membrowse/membrowse-action/comment-action@v1
+        with:
+          json_files: ${{ steps.analyze.outputs.report_path }}
