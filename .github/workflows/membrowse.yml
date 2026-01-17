@@ -20,7 +20,7 @@ jobs:
 
       - name: Build firmware (PlatformIO)
         run: |
-          pio build
+          pio run
 
       - name: Analyze memory
         id: analyze
