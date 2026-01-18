@@ -10,7 +10,10 @@ Theme themes[] = {
     {ST77XX_WHITE, ST77XX_BLACK, "light"},
     {0x0014, ST77XX_ORANGE, "dark-orange"},
     {0x2104, ST77XX_MAGENTA, "purple"},
-    {ST77XX_BLACK, ST77XX_RED, "red-night"}
+    {ST77XX_BLACK, ST77XX_RED, "red-night"},
+    {ST77XX_BLACK, ST77XX_RED, "red-night1"},
+    {ST77XX_BLACK, ST77XX_RED, "red-night2"},
+    {ST77XX_BLACK, ST77XX_RED, "red-night3"}
 };
 
 int currentTheme = 0;
